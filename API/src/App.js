@@ -1,10 +1,18 @@
 import React from "react";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
+import CampInfoBlock from "./CampInfoBlock";
 import MainBlock from "./Main";
+
 function App() {
     return (
         <>
-            <MainBlock />
+            <BrowserRouter>
+                <Routes>
+                    <Route path="/" element={<MainBlock />} />
+                    <Route path="/campinfo/:contentId" element={<CampInfoBlock />} />
+                </Routes>
+            </BrowserRouter>
         </>
     );
 }

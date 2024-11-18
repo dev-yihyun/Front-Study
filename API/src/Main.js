@@ -1,4 +1,3 @@
-//TODO : 페이지네이션 뒤로가기, 앞으로가기 버튼 구현하기
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
@@ -26,6 +25,9 @@ function MainBlock() {
             console.log("response", response);
         } catch (err) {
             console.log(err.message);
+            return (
+                <p>{err.message} : 데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.</p>
+            );
         } finally {
             console.log("Loading..");
         }
