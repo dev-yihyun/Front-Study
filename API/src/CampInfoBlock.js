@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import MapBlock from "./MapBlock";
 
 function CampInfoBlock() {
     const location = useLocation();
@@ -62,6 +63,7 @@ function CampInfoBlock() {
             <p>운영 일 : {campData?.operDeCl || "정보 없음"}</p>
             <p>주변 이용 가능 시설 : {campData?.posblFcltyCl || "정보 없음"}</p>
             <p> 태마환경 : {campData?.themaEnvrnCl || "정보 없음"}</p>
+            <MapBlock mapX={campData.mapX} mapY={campData.mapY} />
         </>
     );
 }
