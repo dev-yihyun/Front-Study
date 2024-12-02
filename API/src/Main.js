@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import CampListBlock from "./CampListBlock";
 const Button = styled.button`
@@ -71,6 +72,12 @@ function MainBlock() {
     };
     return (
         <>
+            <p>
+                <Link to="/login">로그인</Link>
+            </p>
+            <p>
+                <Link to="/signin">회원가입</Link>
+            </p>
             <CampListBlock campData={campData} />
             <button onClick={onPrevPage}>이전 페이지</button>
             <button onClick={onPrev}>이전</button>
