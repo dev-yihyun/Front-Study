@@ -11,9 +11,11 @@ function App() {
         <>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<MainBlock />} />
+                    {/* <Route path="/" element={<MainBlock />} /> */}
+                    <Route path="/" element={<Login />} />
+                    <Route path="/main" element={<MainBlock />} />
                     <Route path="/campinfo/:contentId" element={<CampInfoBlock />} />
-                    <Route path="/login" element={<Login />} />
+                    {/* <Route path="/login" element={<Login />} /> */}
                     <Route path="/signin" element={<Signin />} />
                 </Routes>
             </BrowserRouter>

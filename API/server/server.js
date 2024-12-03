@@ -108,6 +108,38 @@ app.post("/idcheck", (req, res) => {
     // res.json({ success: true, message: "사용 가능한 아이디입니다." });
 });
 
+app.post("/login", (req, res) => {
+    const inputID = req.body.inputID;
+    const inputPW = req.body.inputPW;
+
+    connection.query(
+        "SELECT id,pw FROM `react_project`.`user_` WHERE id=? and pw=?",
+        [inputID, inputPW],
+        function (err, rows) {
+            if (err) {
+                console.log("실패", err);
+                return res.status(500).json({
+                    success: false,
+                    message: "서버 오류가 발생했습니다.",
+                    error: err, // 상세 오류 정보
+                });
+            } else {
+                if (rows.length === 0) {
+                    return res.status(200).json({
+                        success: false,
+                        message: "로그인 실패",
+                    });
+                } else {
+                    return res.status(200).json({
+                        success: true,
+                        message: "로그인 성공",
+                    });
+                }
+            }
+        }
+    );
+});
+
 app.listen(port, () => {
     console.log(`Connect at http://localhost:${port}`);
 });
