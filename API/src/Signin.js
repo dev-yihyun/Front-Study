@@ -101,7 +101,6 @@ function Signin() {
                 return res.json();
             })
             .then((json) => {
-                console.log("##json", json);
                 if (json.success) {
                     // alert("사용 가능한 아이디입니다.");
                     setIDCheck(true);

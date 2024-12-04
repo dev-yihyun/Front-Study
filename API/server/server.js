@@ -26,14 +26,11 @@ app.get("/", (req, res) => {
 app.post("/signin", (req, res) => {
     const inputID = req.body.inputID;
     const inputPW = req.body.inputPW;
-    console.log("##req", req);
-    // console.log("##res", res);
 
     connection.query(
         "INSERT INTO `react_project`.`user_` (`id`,`pw`,`insertdate`) values (?,?,NOW())",
         [inputID, inputPW],
         function (err, rows) {
-            console.log("##rows", rows);
             if (err) {
                 console.log("실패", err);
                 // res.status(500).json({ success: false, error: err });
@@ -67,12 +64,10 @@ app.post("/signin", (req, res) => {
 
 app.post("/idcheck", (req, res) => {
     const { inputID } = req.body;
-    console.log("##", inputID);
     connection.query(
         "SELECT COUNT(id) AS count FROM `react_project`.`user_` WHERE id=?",
         [inputID],
         function (err, rows) {
-            console.log("##rows", rows);
             if (err) {
                 console.log("실패", err);
                 return res.status(500).json({
@@ -108,6 +103,8 @@ app.post("/idcheck", (req, res) => {
     // res.json({ success: true, message: "사용 가능한 아이디입니다." });
 });
 
+const JWT_SECRET = "your_jwt_secret_key";
+const jwt = require("jsonwebtoken");
 app.post("/login", (req, res) => {
     const inputID = req.body.inputID;
     const inputPW = req.body.inputPW;
@@ -130,9 +127,12 @@ app.post("/login", (req, res) => {
                         message: "로그인 실패",
                     });
                 } else {
+                    const token = jwt.sign({ id: inputID }, JWT_SECRET, { expiresIn: "1h" }); //1시간 동안 유효
+                    console.log("토큰 생성:", token); // 생성된 토큰 확인
                     return res.status(200).json({
                         success: true,
                         message: "로그인 성공",
+                        token: token,
                     });
                 }
             }

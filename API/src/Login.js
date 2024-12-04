@@ -43,7 +43,8 @@ function Login() {
                     throw new Error("서버 응답이 올바르지 않습니다.");
                 }
                 if (json.success) {
-                    alert(json.message);
+                    localStorage.setItem("token", json.token);
+                    alert(json.message || "로그인 성공");
                     navigate("/main");
                 } else {
                     alert(json.message || "로그인 실패");
