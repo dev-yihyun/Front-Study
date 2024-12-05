@@ -8,6 +8,8 @@ const Button = styled.button`
     color: ${(props) => (props.$active ? "red" : "black")};
 `;
 function MainBlock() {
+    const userID = localStorage.getItem("userID");
+
     const [campData, setCampData] = useState(); //api에서 불러온 데이터
     const [totalData, setTotalData] = useState(0); //api 총 데이터 양
     const numOfRows = 10;
@@ -72,6 +74,7 @@ function MainBlock() {
     };
     return (
         <>
+            <h1>환영합니다 {userID}님!</h1>
             <p>
                 <Link to="/login">로그인</Link>
             </p>

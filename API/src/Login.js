@@ -44,6 +44,7 @@ function Login() {
                 }
                 if (json.success) {
                     localStorage.setItem("token", json.token);
+                    localStorage.setItem("userID", inputID);
                     alert(json.message || "로그인 성공");
                     navigate("/main");
                 } else {
