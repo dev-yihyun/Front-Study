@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CampListBlock from "./CampListBlock";
 const Button = styled.button`
@@ -9,6 +9,7 @@ const Button = styled.button`
 `;
 function MainBlock() {
     const userID = localStorage.getItem("userID");
+    const navigate = useNavigate();
 
     const [campData, setCampData] = useState(); //api에서 불러온 데이터
     const [totalData, setTotalData] = useState(0); //api 총 데이터 양
@@ -32,10 +33,28 @@ function MainBlock() {
         } finally {
         }
     };
+
     useEffect(() => {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        // 렌더링 이후에 탐색 수행
+        if (!userID) {
+            alert("로그인 후 이용 가능합니다.");
+            navigate("/"); // navigate는 useEffect에서 실행
+        }
+    }, [userID, navigate]);
+
+    if (!userID) {
+        // 리다이렉트 중에는 아무것도 렌더링하지 않음
+        return null;
+    }
+    //또는
+    // if (!userID) {
+    //     alert("로그인 후 이용 가능합니다.");
+    //     navigate("/");
+    // }
     const onGoPage = (index) => {
         pageNo.current = currentPageGroup * pageButtonNumber + index + 1;
         fetchData();
@@ -72,15 +91,29 @@ function MainBlock() {
             fetchData();
         }
     };
+
+    const onLogout = () => {
+        // 1. 토큰 삭제
+        localStorage.removeItem("token");
+        localStorage.removeItem("userID");
+        // 2. 사용자에게 메시지 표시 (옵션)
+        alert("로그아웃되었습니다.");
+        // 3. 로그인 페이지로 이동
+        navigate("/");
+    };
+
     return (
         <>
             <h1>환영합니다 {userID}님!</h1>
-            <p>
+            <button onClick={onLogout}>로그아웃</button>
+
+            {/* <p>
                 <Link to="/login">로그인</Link>
             </p>
             <p>
                 <Link to="/signin">회원가입</Link>
-            </p>
+            </p> */}
+
             <CampListBlock campData={campData} />
             <button onClick={onPrevPage}>이전 페이지</button>
             <button onClick={onPrev}>이전</button>
