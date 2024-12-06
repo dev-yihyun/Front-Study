@@ -35,6 +35,32 @@ function Signin() {
             setvalidationPW(true);
         }
     };
+    const [inputName, setInputName] = useState("");
+    const onInputName = (event) => {
+        setInputName(event.target.value);
+    };
+    // 010 - 0000 - 0000
+    const [inputPhone, setInputPhone] = useState("");
+    // 전화번호 포맷팅 함수
+    const formatPhoneNumber = (value) => {
+        // 숫자만 남기기
+        const cleaned = value.replace(/\D/g, "");
+        // 포맷 적용: 010-1234-5678
+        if (cleaned.length <= 3) {
+            return cleaned; // 3자리 이하 그대로
+        } else if (cleaned.length <= 7) {
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`; // 010-123
+        } else {
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`; // 010-1234-5678
+        }
+    };
+    const onInputPhone = (event) => {
+        const value = event.target.value;
+        // 숫자만 남기기
+        const numericValue = value.replace(/\D/g, "");
+        // setInputPhone(numericValue);
+        setInputPhone(formatPhoneNumber(value));
+    };
 
     const onInsertUserDB = () => {
         if (!inputID.trim() || !inputPW.trim()) {
@@ -47,6 +73,8 @@ function Signin() {
         const userData = {
             inputID: inputID,
             inputPW: inputPW,
+            inputName: inputName,
+            inputPhone: inputPhone,
         };
 
         fetch("http://localhost:3001/signin", {
@@ -175,6 +203,29 @@ function Signin() {
                         <p style={{ color: "red" }}>최대 20자까지 입력 가능합니다.</p>
                     </>
                 )}
+                <p>
+                    NAME :
+                    <input
+                        type="text"
+                        placeholder="NAME"
+                        name="inputName"
+                        value={inputName}
+                        onChange={onInputName}
+                        maxLength={20}
+                    />
+                </p>
+                <p>
+                    PHONE :
+                    <input
+                        type="tel"
+                        placeholder="PHONE"
+                        name="inputPhone"
+                        value={inputPhone}
+                        onChange={onInputPhone}
+                        maxLength={13} // 010-1234-5678 기준 최대 길이 설정
+                        // maxLength={11} // 01012345678 기준 최대 길이 설정
+                    />
+                </p>
 
                 <button
                     type="button"
@@ -184,7 +235,9 @@ function Signin() {
                         !inputPW.trim() ||
                         validationID ||
                         validationPW ||
-                        !idCheck
+                        !idCheck ||
+                        !inputName ||
+                        !inputPhone
                     }
                 >
                     회원가입

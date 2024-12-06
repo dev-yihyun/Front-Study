@@ -26,10 +26,12 @@ app.get("/", (req, res) => {
 app.post("/signin", (req, res) => {
     const inputID = req.body.inputID;
     const inputPW = req.body.inputPW;
+    const inputName = req.body.inputName;
+    const inputPhone = req.body.inputPhone;
 
     connection.query(
-        "INSERT INTO `react_project`.`user_` (`id`,`pw`,`insertdate`) values (?,?,NOW())",
-        [inputID, inputPW],
+        "INSERT INTO `react_project`.`user_` (`id`,`pw`,`name`,`phone`,`insertdate`) values (?,?,?,?,NOW())",
+        [inputID, inputPW, inputName, inputPhone],
         function (err, rows) {
             if (err) {
                 console.log("실패", err);
@@ -79,14 +81,12 @@ app.post("/idcheck", (req, res) => {
                 // 아이디 중복 여부 확인
                 if (rows[0].count > 0) {
                     // 아이디가 이미 존재하면
-                    console.log("## 존재하는 아이디");
                     return res.status(200).json({
                         success: false,
-                        message: "이미 사용 중인 아이디입니다.",
+                        message: "사용할 수 없는 아이디입니다.",
                     });
                 } else {
                     // 아이디가 사용 가능하면
-                    console.log("## 사용가능한 아이디");
                     return res.status(200).json({
                         success: true,
                         message: "사용 가능한 아이디입니다.",
@@ -108,7 +108,6 @@ const jwt = require("jsonwebtoken");
 app.post("/login", (req, res) => {
     const inputID = req.body.inputID;
     const inputPW = req.body.inputPW;
-
     connection.query(
         "SELECT id,pw FROM `react_project`.`user_` WHERE id=? and pw=?",
         [inputID, inputPW],
