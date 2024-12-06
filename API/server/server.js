@@ -28,11 +28,12 @@ app.post("/signin", (req, res) => {
     const inputPW = req.body.inputPW;
     const inputName = req.body.inputName;
     const inputPhone = req.body.inputPhone;
+    const inputEmail = req.body.inputEmail;
 
     connection.query(
-        "INSERT INTO `react_project`.`user_` (`id`,`pw`,`name`,`phone`,`insertdate`) values (?,?,?,?,NOW())",
-        [inputID, inputPW, inputName, inputPhone],
-        function (err, rows) {
+        "INSERT INTO `react_project`.`user_` (`id`,`pw`,`name`,`phone`,`email`,`insertdate`) values (?,?,?,?,?,NOW())",
+        [inputID, inputPW, inputName, inputPhone, inputEmail],
+        function (err) {
             if (err) {
                 console.log("실패", err);
                 // res.status(500).json({ success: false, error: err });

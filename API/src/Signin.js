@@ -62,6 +62,21 @@ function Signin() {
         setInputPhone(formatPhoneNumber(value));
     };
 
+    const [inputEmail, setinputEmail] = useState("");
+    const regexEmail = /\S+@\S+\.\S+/;
+    const [checekEmail, setCheckEmail] = useState(false);
+    const [EmailCheckMessage, setEmailCheckMessage] = useState("");
+    const onInputEmail = (event) => {
+        setinputEmail(event.target.value);
+        if (regexEmail.test(inputEmail)) {
+            setCheckEmail(false);
+            setEmailCheckMessage("");
+        } else {
+            setCheckEmail(true);
+            setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
+        }
+    };
+
     const onInsertUserDB = () => {
         if (!inputID.trim() || !inputPW.trim()) {
             alert("ID와 PW를 입력해주세요.");
@@ -75,6 +90,7 @@ function Signin() {
             inputPW: inputPW,
             inputName: inputName,
             inputPhone: inputPhone,
+            inputEmail: inputEmail,
         };
 
         fetch("http://localhost:3001/signin", {
@@ -227,6 +243,18 @@ function Signin() {
                     />
                 </p>
 
+                <p>
+                    EMAIL :
+                    <input
+                        type="email"
+                        placeholder="EMAIL"
+                        name="inputEmail"
+                        value={inputEmail}
+                        onChange={onInputEmail}
+                        maxLength={45}
+                    />
+                </p>
+                <p style={{ color: !checekEmail ? "green" : "red" }}>{EmailCheckMessage}</p>
                 <button
                     type="button"
                     onClick={onInsertUserDB}
@@ -237,7 +265,9 @@ function Signin() {
                         validationPW ||
                         !idCheck ||
                         !inputName ||
-                        !inputPhone
+                        !inputPhone ||
+                        !inputEmail ||
+                        checekEmail
                     }
                 >
                     회원가입
