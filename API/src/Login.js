@@ -67,6 +67,9 @@ function Login() {
             <p>
                 <Link to="/signin">회원가입</Link>
             </p>
+            <p>
+                <Link to="/findid">ID 찾기</Link>
+            </p>
             <form>
                 <p>
                     ID :
@@ -99,3 +102,27 @@ function Login() {
 }
 
 export default Login;
+/*
+const onLogin = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Login failed');
+      }
+
+      const data = await response.json();
+      localStorage.setItem('token', data.token); // JWT 저장
+      alert('Login successful!');
+    } catch (err) {
+      setError('Invalid username or password');
+    }
+  };
+
+*/

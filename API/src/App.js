@@ -2,6 +2,7 @@ import React from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "./App.css";
 import CampInfoBlock from "./CampInfoBlock";
+import FindID from "./FindID";
 import Login from "./Login";
 import MainBlock from "./Main";
 import Signin from "./Signin";
@@ -17,6 +18,7 @@ function App() {
                     <Route path="/campinfo/:contentId" element={<CampInfoBlock />} />
                     {/* <Route path="/login" element={<Login />} /> */}
                     <Route path="/signin" element={<Signin />} />
+                    <Route path="/findid" element={<FindID />} />
                 </Routes>
             </BrowserRouter>
         </>

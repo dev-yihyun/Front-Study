@@ -140,6 +140,39 @@ app.post("/login", (req, res) => {
     );
 });
 
+app.post("/findid", (req, res) => {
+    const dataName = req.body.name;
+    const dataContact = req.body.contact;
+    const dataType = req.body.type;
+    const query =
+        dataType === "email"
+            ? "SELECT id FROM `react_project`.`user_` WHERE name=? and email=?"
+            : "SELECT id FROM `react_project`.`user_` WHERE name=? and phone=?";
+
+    connection.query(query, [dataName, dataContact], function (err, result) {
+        if (err) {
+            console.log("ID 찾기 실패", err);
+            return res.status(500).json({
+                success: false,
+                message: "서버 오류가 발생했습니다.",
+                error: err, // 상세 오류 정보
+            });
+        } else {
+            if (result.length > 0) {
+                return res.status(200).json({
+                    success: true,
+                    message: result,
+                });
+            } else {
+                return res.status(200).json({
+                    success: false,
+                    message: "아이디를 찾을 수 없습니다.",
+                });
+            }
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Connect at http://localhost:${port}`);
 });
