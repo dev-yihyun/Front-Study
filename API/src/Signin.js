@@ -41,6 +41,7 @@ function Signin() {
     };
     // 010 - 0000 - 0000
     const [inputPhone, setInputPhone] = useState("");
+    const [checkPhone, setCheckPhone] = useState(false);
     // 전화번호 포맷팅 함수
     const formatPhoneNumber = (value) => {
         // 숫자만 남기기
@@ -56,15 +57,23 @@ function Signin() {
     };
     const onInputPhone = (event) => {
         const value = event.target.value;
+        const formattedValue = formatPhoneNumber(value);
+        setInputPhone(formattedValue);
+        // 전화번호가 010-1234-5678 형식인지 확인
+        if (/^\d{3}-\d{4}-\d{4}$/.test(formattedValue)) {
+            setCheckPhone(false); // 형식에 맞으면 오류 없음
+        } else {
+            setCheckPhone(true); // 형식이 틀리면 오류 있음
+        }
         // 숫자만 남기기
-        const numericValue = value.replace(/\D/g, "");
+        // const numericValue = value.replace(/\D/g, "");
         // setInputPhone(numericValue);
-        setInputPhone(formatPhoneNumber(value));
+        // setInputPhone(formatPhoneNumber(value));
     };
 
     const [inputEmail, setinputEmail] = useState("");
     const regexEmail = /\S+@\S+\.\S+/;
-    const [checekEmail, setCheckEmail] = useState(false);
+    const [checkEmail, setCheckEmail] = useState(false);
     const [EmailCheckMessage, setEmailCheckMessage] = useState("");
     const onInputEmail = (event) => {
         setinputEmail(event.target.value);
@@ -75,6 +84,8 @@ function Signin() {
             setCheckEmail(true);
             setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
         }
+        // if (!formData.email) newErrors.email = "Email is required.";
+        // if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid.";
     };
 
     const onInsertUserDB = () => {
@@ -163,6 +174,7 @@ function Signin() {
             });
         e.preventDefault();
     };
+
     return (
         <>
             <p>
@@ -242,6 +254,9 @@ function Signin() {
                         // maxLength={11} // 01012345678 기준 최대 길이 설정
                     />
                 </p>
+                {checkPhone && (
+                    <p style={{ color: "red" }}>전화번호를 올바른 형식으로 입력해 주세요.</p>
+                )}
 
                 <p>
                     EMAIL :
@@ -254,7 +269,7 @@ function Signin() {
                         maxLength={45}
                     />
                 </p>
-                <p style={{ color: !checekEmail ? "green" : "red" }}>{EmailCheckMessage}</p>
+                <p style={{ color: !checkEmail ? "green" : "red" }}>{EmailCheckMessage}</p>
                 <button
                     type="button"
                     onClick={onInsertUserDB}
@@ -267,7 +282,8 @@ function Signin() {
                         !inputName ||
                         !inputPhone ||
                         !inputEmail ||
-                        checekEmail
+                        checkEmail ||
+                        checkPhone
                     }
                 >
                     회원가입
@@ -278,3 +294,21 @@ function Signin() {
 }
 
 export default Signin;
+// const checkEmail = () => {
+//     if (regexEmail.test(inputEmail)) {
+//         setCheckEmail(true);
+//         setEmailCheckMessage("");
+//     } else {
+//         setCheckEmail(false);
+//         setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
+//     }
+//     // if (regexEmail.test(inputEmail)) {
+//     //     //사용 가능한 메일 입니다.
+//     //     setCheckEmail(true);
+//     //     setEmailCheckMessage("사용 가능한 메일입니다.");
+//     // } else {
+//     //     //사용할 수 없는 메일입니다.
+//     //     setCheckEmail(false);
+//     //     setEmailCheckMessage("사용할 수 없는 메일입니다.");
+//     // }
+// };
