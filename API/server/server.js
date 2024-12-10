@@ -173,6 +173,62 @@ app.post("/findid", (req, res) => {
     });
 });
 
+app.post("/findpw", (req, res) => {
+    const inputID = req.body.inputID;
+    const inputName = req.body.inputName;
+    const inputPhone = req.body.inputPhone;
+    const inputEmail = req.body.inputEmail;
+    const query =
+        "SELECT pw FROM `react_project`.`user_` where id=? and name=? and email=? and phone=? ";
+
+    connection.query(query, [inputID, inputName, inputEmail, inputPhone], function (err, result) {
+        if (err) {
+            console.log("PW 찾기 실패", err);
+            return res.status(500).json({
+                success: false,
+                message: "서버 오류가 발생했습니다.",
+                error: err, // 상세 오류 정보
+            });
+        } else {
+            if (result.length > 0) {
+                return res.status(200).json({
+                    success: true,
+                });
+            } else {
+                return res.status(200).json({
+                    success: false,
+                });
+            }
+        }
+    });
+});
+app.post("/resetpassword", (req, res) => {
+    const inputID = req.body.inputID;
+    const password = req.body.password;
+
+    const query = "UPDATE `react_project`.`user_` SET pw=? WHERE id=? ;";
+    connection.query(query, [password, inputID], function (err) {
+        if (err) {
+            console.log("PW update fail", err);
+            return res.status(500).json({
+                success: false,
+                message: "서버 오류가 발생했습니다.",
+                error: err,
+            });
+        } else {
+            try {
+                return res.status(200).json({
+                    success: true,
+                });
+            } catch (error) {
+                return res.status(200).json({
+                    success: false,
+                });
+            }
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Connect at http://localhost:${port}`);
 });

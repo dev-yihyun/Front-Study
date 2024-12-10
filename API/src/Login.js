@@ -70,6 +70,9 @@ function Login() {
             <p>
                 <Link to="/findid">ID 찾기</Link>
             </p>
+            <p>
+                <Link to="/findpw">PW 찾기</Link>
+            </p>
             <form>
                 <p>
                     ID :
