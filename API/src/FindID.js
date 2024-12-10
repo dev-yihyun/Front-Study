@@ -96,11 +96,8 @@ function FindID() {
                     throw new Error("서버 응답이 올바르지 않습니다.");
                 }
                 if (json.success) {
-                    console.log("##json", json);
-                    console.log("##json.message", json);
                     setResult(`result : ${json?.message[0]?.id} `);
                 } else {
-                    console.log("##json", json);
                     setResult(`result : ${json?.message} `);
                 }
                 setIsShow(true);
