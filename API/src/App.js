@@ -6,6 +6,7 @@ import FindID from "./FindID";
 import FindPW from "./FindPW";
 import Login from "./Login";
 import MainBlock from "./Main";
+import MyPage from "./MyPage";
 import Signin from "./Signin";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
                     <Route path="/signin" element={<Signin />} />
                     <Route path="/findid" element={<FindID />} />
                     <Route path="/findpw" element={<FindPW />} />
+                    <Route path="/mypage" element={<MyPage />} />
                 </Routes>
             </BrowserRouter>
         </>

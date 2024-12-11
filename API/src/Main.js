@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import CampListBlock from "./CampListBlock";
 const Button = styled.button`
@@ -106,6 +106,7 @@ function MainBlock() {
         <>
             <h1>환영합니다 {userID}님!</h1>
             <button onClick={onLogout}>로그아웃</button>
+            <Link to="/mypage">마이페이지</Link>
 
             {/* <p>
                 <Link to="/login">로그인</Link>

@@ -207,7 +207,7 @@ app.post("/resetpassword", (req, res) => {
     const password = req.body.password;
 
     const query = "UPDATE `react_project`.`user_` SET pw=? WHERE id=? ;";
-    connection.query(query, [password, inputID], function (err) {
+    connection.query(query, [password, inputID], function (err, result) {
         if (err) {
             console.log("PW update fail", err);
             return res.status(500).json({
@@ -223,6 +223,37 @@ app.post("/resetpassword", (req, res) => {
             } catch (error) {
                 return res.status(200).json({
                     success: false,
+                });
+            }
+        }
+    });
+});
+
+app.post("/mypage", (req, res) => {
+    const userID = req.body.userID;
+    const query = "SELECT id,name,phone,email,insertdate FROM react_project.user_ WHERE id=?;";
+
+    console.log("##userID", userID);
+
+    connection.query(query, [userID], function (err, result) {
+        if (err) {
+            console.log("ID 찾기 실패", err);
+            return res.status(500).json({
+                success: false,
+                message: "서버 오류가 발생했습니다.",
+                error: err, // 상세 오류 정보
+            });
+        } else {
+            if (result.length > 0) {
+                console.log("##result", result);
+                return res.status(200).json({
+                    success: true,
+                    message: result[0],
+                });
+            } else {
+                return res.status(200).json({
+                    success: false,
+                    message: "정보를 찾을 수 없습니다.",
                 });
             }
         }
