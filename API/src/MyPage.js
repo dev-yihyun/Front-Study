@@ -1,14 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { useQuery } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import "./App.css";
 
 function MyPage() {
     const userID = localStorage.getItem("userID");
-    const [userInfoData, setUerInfoData] = useState();
     const navigate = useNavigate();
-
-    console.log("##userID", userID);
-    console.log("##userInfoData", userInfoData);
+    // const queryClient = useQueryClient();
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
@@ -19,39 +17,39 @@ function MyPage() {
             date.toLocaleTimeString("ko-KR", { hour12: false });
         return formattedDate;
     };
-    const userInfo = () => {
-        fetch("http://localhost:3001/mypage", {
-            method: "post",
-            headers: {
-                "content-type": "application/json",
-            },
-            body: JSON.stringify({ userID: userID }),
-        })
-            .then((res) => {
+
+    // Fetch user info using react-query
+    const {
+        data: userInfoData,
+        isLoading,
+        isError,
+    } = useQuery(
+        ["userInfo", userID],
+        () =>
+            fetch("http://localhost:3001/mypage", {
+                method: "post",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify({ userID }),
+            }).then((res) => {
                 if (!res.ok) {
                     throw new Error(`서버 요청 실패: ${res.status}`);
                 }
                 return res.json();
-            })
-            .then((json) => {
-                if (!json || typeof json.success === "undefined") {
-                    throw new Error("서버 응답이 올바르지 않습니다.");
-                }
-                if (json.success) {
-                    setUerInfoData(json.message);
-                } else {
-                    setUerInfoData(`${json?.message}`);
-                }
-            })
-            .catch((error) => {
-                console.error("오류:", error);
-                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-                navigate("/");
-            });
-    };
-    useEffect(() => {
-        userInfo();
-    }, []);
+            }),
+        {
+            enabled: !!userID, // Only run query if userID exists
+            staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+        }
+    );
+
+    if (isLoading) return <p>데이터를 불러오는 중...</p>;
+    if (isError) {
+        alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
+        navigate("/");
+        return null;
+    }
     return (
         <>
             <Link to="/main">홈</Link>
@@ -59,11 +57,11 @@ function MyPage() {
             <div>
                 {userInfoData ? (
                     <>
-                        <p> 이름 : {userInfoData.name}</p>
-                        <p> 아이디 : {userInfoData.id}</p>
-                        <p>이메일 : {userInfoData.email}</p>
-                        <p>전화번호 : {userInfoData.phone}</p>
-                        <p>가입시기: {formatDate(userInfoData.insertdate)}</p>
+                        <p> 이름 : {userInfoData.message.name}</p>
+                        <p> 아이디 : {userInfoData.message.id}</p>
+                        <p>이메일 : {userInfoData.message.email}</p>
+                        <p>전화번호 : {userInfoData.message.phone}</p>
+                        <p>가입시기: {formatDate(userInfoData.message.insertdate)}</p>
                     </>
                 ) : (
                     <p>데이터를 불러오는 중...</p>
