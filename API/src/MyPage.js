@@ -1,16 +1,46 @@
-import React from "react";
-import { useQuery } from "react-query";
+import React, { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import "./App.css";
 
 function MyPage() {
     const userID = localStorage.getItem("userID");
+    const [showEmailInput, setShowEmailInput] = useState(false);
+    const [inputEmail, setInputEmail] = useState("");
     const navigate = useNavigate();
-    // const queryClient = useQueryClient();
+    const queryClient = useQueryClient();
+    const regexEmail = /\S+@\S+\.\S+/;
+    const [checkEmail, setCheckEmail] = useState(false);
+    const [EmailCheckMessage, setEmailCheckMessage] = useState("");
+
+    const onShowEmailInput = () => {
+        setShowEmailInput(!showEmailInput);
+        if (!showEmailInput && userInfoData) {
+            // 이메일 입력창을 열 때 상태 초기화
+            setInputEmail(userInfoData.message.email);
+            setCheckEmail(true);
+            setEmailCheckMessage("");
+        }
+    };
+
+    const onInputEmail = (event) => {
+        setInputEmail(event.target.value);
+        if (inputEmail.trim()) {
+            console.log("##공백");
+            setCheckEmail(true);
+            setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
+        }
+        if (regexEmail.test(inputEmail)) {
+            setCheckEmail(false);
+            setEmailCheckMessage("");
+        } else {
+            setCheckEmail(true);
+            setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
+        }
+    };
 
     const formatDate = (dateString) => {
         const date = new Date(dateString);
-        // 'YYYY-MM-DD HH:MM:SS' 형식으로 포맷
         const formattedDate =
             date.toLocaleDateString("ko-KR") +
             " " +
@@ -44,12 +74,65 @@ function MyPage() {
         }
     );
 
+    // Update email mutation
+    const updateEmailMutation = useMutation(
+        (newEmail) =>
+            fetch("http://localhost:3001/emailupdate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newEmail),
+            }).then((res) => {
+                if (!res.ok) throw new Error("이메일 변경 실패");
+                return res.json();
+            }),
+        {
+            onSuccess: (data) => {
+                if (data.success) {
+                    alert("이메일이 성공적으로 변경되었습니다. 로그인 화면으로 돌아갑니다.");
+                    navigate("/main");
+                } else {
+                    alert("이메일 수정에 실패했습니다.");
+                }
+            },
+            onError: (error) => {
+                console.error(error);
+                alert("서버 오류가 발생했습니다.");
+                navigate("/");
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+            },
+        }
+    );
+
+    const onSaveEmail = () => {
+        updateEmailMutation.mutate({
+            userID: userID,
+            inputEmail: inputEmail,
+        });
+    };
+    const onEmailCancel = () => {
+        if (userInfoData) {
+            // 이메일 입력창을 닫을 때 현재 이메일로 리셋
+            setInputEmail(userInfoData.message.email);
+        }
+        setShowEmailInput(false);
+    };
+
+    useEffect(() => {
+        console.log("##useEffect");
+        if (userInfoData) {
+            setInputEmail(userInfoData.message.email);
+        }
+    }, [userInfoData]);
+
     if (isLoading) return <p>데이터를 불러오는 중...</p>;
     if (isError) {
         alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
         navigate("/");
         return null;
     }
+
     return (
         <>
             <Link to="/main">홈</Link>
@@ -57,11 +140,42 @@ function MyPage() {
             <div>
                 {userInfoData ? (
                     <>
-                        <p> 이름 : {userInfoData.message.name}</p>
-                        <p> 아이디 : {userInfoData.message.id}</p>
-                        <p>이메일 : {userInfoData.message.email}</p>
-                        <p>전화번호 : {userInfoData.message.phone}</p>
-                        <p>가입시기: {formatDate(userInfoData.message.insertdate)}</p>
+                        <p> 이름 : {userInfoData.message.name} </p>
+                        <p> 아이디 : {userInfoData.message.id} </p>
+                        <div>
+                            이메일 :
+                            {showEmailInput ? (
+                                <>
+                                    <input
+                                        type="email"
+                                        value={inputEmail}
+                                        onChange={onInputEmail}
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={onSaveEmail}
+                                        disabled={!inputEmail.trim() || checkEmail}
+                                    >
+                                        저장
+                                    </button>
+                                    <button type="button" onClick={onEmailCancel}>
+                                        취소
+                                    </button>{" "}
+                                    <p style={{ color: !checkEmail ? "green" : "red" }}>
+                                        {EmailCheckMessage}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    {userInfoData.message.email}
+                                    <button type="button" onClick={onShowEmailInput}>
+                                        수정
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                        <p>전화번호 :{userInfoData.message.phone}</p>
+                        <p> 가입시기: {formatDate(userInfoData.message.insertdate)} </p>
                     </>
                 ) : (
                     <p>데이터를 불러오는 중...</p>

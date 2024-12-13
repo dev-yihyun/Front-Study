@@ -245,7 +245,6 @@ app.post("/mypage", (req, res) => {
             });
         } else {
             if (result.length > 0) {
-                console.log("##result", result);
                 return res.status(200).json({
                     success: true,
                     message: result[0],
@@ -254,6 +253,33 @@ app.post("/mypage", (req, res) => {
                 return res.status(200).json({
                     success: false,
                     message: "정보를 찾을 수 없습니다.",
+                });
+            }
+        }
+    });
+});
+
+app.post("/emailupdate", (req, res) => {
+    const userID = req.body.userID;
+    const inputEmail = req.body.inputEmail;
+    const query = "UPDATE `react_project`.`user_` SET email=? WHERE id=?;";
+
+    connection.query(query, [inputEmail, userID], function (err) {
+        if (err) {
+            console.log("email update fail", err);
+            return res.status(500).json({
+                success: false,
+                message: "서버 오류가 발생했습니다.",
+                error: err,
+            });
+        } else {
+            try {
+                return res.status(200).json({
+                    success: true,
+                });
+            } catch (error) {
+                return res.status(200).json({
+                    success: false,
                 });
             }
         }
