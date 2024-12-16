@@ -123,8 +123,93 @@ function MyPage() {
         console.log("##useEffect");
         if (userInfoData) {
             setInputEmail(userInfoData.message.email);
+            setInputPhone(userInfoData?.message?.phone);
         }
     }, [userInfoData]);
+
+    const updatePhoneMutation = useMutation(
+        (newPhone) =>
+            fetch("http://localhost:3001/phoneupdate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newPhone),
+            }).then((res) => {
+                if (!res.ok) throw new Error("이메일 변경 실패");
+                return res.json();
+            }),
+        {
+            onSuccess: (data) => {
+                if (data.success) {
+                    alert("전화번호가 성공적으로 변경되었습니다. 메인으로 돌아갑니다.");
+                    navigate("/main");
+                } else {
+                    alert("전화번호 수정에 실패했습니다.");
+                }
+            },
+            onError: (error) => {
+                console.error(error);
+                alert("서버 오류가 발생했습니다.");
+                navigate("/");
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(["userInfo", userID]);
+            },
+        }
+    );
+
+    const [showPhoneInput, setShowPhoneInput] = useState(false);
+    const [inputPhone, setInputPhone] = useState("");
+    const [checkPhone, setCheckPhone] = useState(false);
+    const [phoneCheckMessage, setPhoneCheckMessage] = useState("");
+    const formatPhoneNumber = (value) => {
+        // 숫자만 남기기
+        const cleaned = value.replace(/\D/g, "");
+        // 포맷 적용: 010-1234-5678
+        if (cleaned.length <= 3) {
+            return cleaned; // 3자리 이하 그대로
+        } else if (cleaned.length <= 7) {
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`; // 010-123
+        } else {
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`; // 010-1234-5678
+        }
+    };
+    const onShowPhoneInput = () => {
+        setShowPhoneInput(!showPhoneInput);
+        if (!showPhoneInput && userInfoData) {
+            setInputPhone(userInfoData?.message?.phone);
+            setCheckPhone(true);
+            setPhoneCheckMessage("");
+        }
+    };
+    const onPhoneCancel = () => {
+        if (userInfoData) {
+            setInputPhone(userInfoData?.message?.phone);
+        }
+        setShowPhoneInput(false);
+    };
+    const onInputPhone = (event) => {
+        const value = event.target.value;
+        const formattedValue = formatPhoneNumber(value);
+        setInputPhone(formattedValue);
+        // 전화번호가 010-1234-5678 형식인지 확인
+        if (inputPhone.trim()) {
+            setCheckPhone(true);
+            setPhoneCheckMessage("전화번호를 정확하게 입력해 주세요.");
+        }
+        if (/^\d{3}-\d{4}-\d{4}$/.test(formattedValue)) {
+            setCheckPhone(false); // 형식에 맞으면 오류 없음
+            setPhoneCheckMessage("");
+        } else {
+            setCheckPhone(true); // 형식이 틀리면 오류 있음
+            setPhoneCheckMessage("전화번호를 올바른 형식으로 입력해 주세요.");
+        }
+    };
+    const onSavePhone = () => {
+        updatePhoneMutation.mutate({
+            userID: userID,
+            inputPhone: inputPhone,
+        });
+    };
 
     if (isLoading) return <p>데이터를 불러오는 중...</p>;
     if (isError) {
@@ -174,7 +259,39 @@ function MyPage() {
                                 </>
                             )}
                         </div>
-                        <p>전화번호 :{userInfoData.message.phone}</p>
+                        <div>
+                            전화번호 :
+                            {showPhoneInput ? (
+                                <>
+                                    <input
+                                        type="tel"
+                                        value={inputPhone}
+                                        onChange={onInputPhone}
+                                        maxLength={13}
+                                    />
+                                    <button
+                                        type="button"
+                                        disabled={!inputPhone.trim() || checkPhone}
+                                        onClick={onSavePhone}
+                                    >
+                                        저장
+                                    </button>
+                                    <button type="button" onClick={onPhoneCancel}>
+                                        취소
+                                    </button>
+                                    <p style={{ color: !checkPhone ? "green" : "red" }}>
+                                        {phoneCheckMessage}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    {userInfoData.message.phone}
+                                    <button type="button" onClick={onShowPhoneInput}>
+                                        수정
+                                    </button>
+                                </>
+                            )}
+                        </div>
                         <p> 가입시기: {formatDate(userInfoData.message.insertdate)} </p>
                     </>
                 ) : (

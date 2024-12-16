@@ -286,6 +286,33 @@ app.post("/emailupdate", (req, res) => {
     });
 });
 
+app.post("/phoneupdate", (req, res) => {
+    const userID = req.body.userID;
+    const inputPhone = req.body.inputPhone;
+    const query = "UPDATE `react_project`.`user_` SET phone=? WHERE id=?;";
+
+    connection.query(query, [inputPhone, userID], function (err) {
+        if (err) {
+            console.log("phone update fail", err);
+            return res.status(500).json({
+                success: false,
+                message: "서버 오류가 발생했습니다.",
+                error: err,
+            });
+        } else {
+            try {
+                return res.status(200).json({
+                    success: true,
+                });
+            } catch (error) {
+                return res.status(200).json({
+                    success: false,
+                });
+            }
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Connect at http://localhost:${port}`);
 });
