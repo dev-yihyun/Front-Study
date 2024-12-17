@@ -120,7 +120,6 @@ function MyPage() {
     };
 
     useEffect(() => {
-        console.log("##useEffect");
         if (userInfoData) {
             setInputEmail(userInfoData.message.email);
             setInputPhone(userInfoData?.message?.phone);
@@ -211,6 +210,157 @@ function MyPage() {
         });
     };
 
+    const [currentPassword, setCurrentPassword] = useState(""); //현재 비밀번호
+    const [password, setPassword] = useState(""); // reset password
+    const [checkpassword, setCheckPassword] = useState(""); // check password
+    const regexPW = /^[a-zA-Z0-9!@#$%^&*+\-=_?]*$/; // 비밀번호 정규식
+    const [validationPW, setvalidationPW] = useState(false); // reset password정규식 맞는지 확인
+    const [validationCheckPW, setvalidationCheckPW] = useState(false);
+    // check password정규식 맞는지 확인
+
+    // 비밀번호 오류 메시지
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
+    //정규식 확인
+    const [validation, setValidation] = useState(false);
+
+    const onCurrentPassword = (event) => {
+        setCurrentPassword(event.target.value);
+    };
+
+    const validationPassword = (newPassword, newCheckPassword) => {
+        if (newPassword !== newCheckPassword) {
+            setValidation(true);
+            setPasswordErrorMessage("비밀번호가 일치하지 않습니다.");
+        } else if (newPassword && regexPW.test(newPassword)) {
+            setValidation(false);
+            setPasswordErrorMessage("");
+        } else {
+            setValidation(false); // 비밀번호가 아직 올바르지 않다는 상태를 설정
+            setPasswordErrorMessage(""); // 사용자에게 보이는 메시지를 비움.
+        }
+    };
+    // reset password
+    const onPassword = (event) => {
+        if (regexPW.test(event.target.value)) {
+            setPassword(event.target.value);
+            setValidation("");
+        } else {
+            setValidation(true);
+        }
+        validationPassword(event.target.value, checkpassword);
+    };
+    // check password
+    const onCheckPassword = (event) => {
+        if (regexPW.test(event.target.value)) {
+            setCheckPassword(event.target.value);
+            setValidation("");
+        } else {
+            setValidation(true);
+        }
+        validationPassword(password, event.target.value);
+    };
+    const userCheck = useMutation(
+        (userData) =>
+            fetch("http://localhost:3001/login", {
+                method: "post",
+                headers: {
+                    "content-type": "application/json",
+                },
+                body: JSON.stringify(userData),
+            }).then((res) => {
+                if (!res.ok) {
+                    throw new Error(`서버 요청 실패: ${res.status}`);
+                }
+                return res.json();
+            }),
+        {
+            onSuccess: (data) => {
+                if (data.success) {
+                    //현재 비밀번호 맞음
+                    console.log("##현재 비밀번호 맞음");
+                } else {
+                    //현재 비밀번호 안 맞음
+                    console.log("##현재 비밀번호 안 맞음");
+                    alert("현재 비밀번호가 맞지 않습니다.");
+                }
+            },
+            onError: (error) => {
+                console.error(error);
+                alert("서버 오류가 발생했습니다.");
+                navigate("/");
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+            },
+        }
+    );
+
+    const updatePasswordMutation = useMutation(
+        (newPassword) =>
+            fetch("http://localhost:3001/resetpassword", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newPassword),
+            }).then((res) => {
+                if (!res.ok) throw new Error("비밀번호 변경 실패");
+                return res.json();
+            }),
+        {
+            onSuccess: (data) => {
+                if (data.success) {
+                    alert("비밀번호가 성공적으로 변경되었습니다. 로그인 후 접속해 주세요.");
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("userID");
+                    navigate("/");
+                } else {
+                    alert("비밀번호 수정에 실패했습니다. 메인으로 돌아갑니다.");
+                    navigate("/main");
+                }
+            },
+            onError: (error) => {
+                console.error(error);
+                alert("서버 오류가 발생했습니다.");
+                navigate("/");
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+            },
+        }
+    );
+
+    // DB
+    const onRestPassword = () => {
+        if (password === checkpassword) {
+            userCheck.mutate(
+                {
+                    inputID: userID,
+                    inputPW: currentPassword,
+                },
+                {
+                    onSuccess: (data) => {
+                        if (data.success) {
+                            // 현재 비밀번호가 맞다면, 비밀번호 업데이트 실행
+                            updatePasswordMutation.mutate({
+                                inputID: userID,
+                                password: password,
+                            });
+                        } else {
+                            // 현재 비밀번호가 틀림
+                            alert("현재 비밀번호가 맞지 않습니다.");
+                            setPasswordErrorMessage("현재 비밀번호가 맞지 않습니다.");
+                        }
+                    },
+                    onError: (error) => {
+                        console.error(error);
+                        alert("비밀번호 확인 중 오류가 발생했습니다.");
+                    },
+                }
+            );
+        } else {
+            alert("비밀번호가 맞지 않습니다.");
+        }
+    };
     if (isLoading) return <p>데이터를 불러오는 중...</p>;
     if (isError) {
         alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
@@ -303,16 +453,48 @@ function MyPage() {
                 <h3>비밀번호 변경</h3>
                 <form>
                     <p>
-                        현재 비밀번호 : <input type="password" />
+                        현재 비밀번호 :{" "}
+                        <input
+                            type="password"
+                            value={currentPassword}
+                            onChange={onCurrentPassword}
+                        />
                     </p>
                     <p>
-                        변경할 비밀번호 : <input type="password" />
+                        변경할 비밀번호 :{" "}
+                        <input
+                            type="password"
+                            placeholder="Reset Password"
+                            maxLength={20}
+                            value={password}
+                            onChange={onPassword}
+                        />
                     </p>
                     <p>
-                        비밀번호 확인 : <input type="password" />
+                        비밀번호 확인 :{" "}
+                        <input
+                            type="password"
+                            placeholder="Check Password"
+                            maxLength={20}
+                            value={checkpassword}
+                            onChange={onCheckPassword}
+                        />
                     </p>
+                    {validation && (
+                        <>
+                            <p style={{ color: "red" }}>
+                                특수문자는 !@#$%^&*+\-=_? 만 입력 가능합니다.
+                            </p>
+                            <p style={{ color: "red" }}>영어, 숫자,특수문자만 입력 가능합니다.</p>
+                            <p style={{ color: "red" }}>최대 20자까지 입력 가능합니다.</p>
+                        </>
+                    )}
+                    <p style={{ color: "red" }}>{passwordErrorMessage}</p>
+
                     <p>
-                        <button type="button">비밀번호 변경</button>
+                        <button type="button" onClick={onRestPassword}>
+                            비밀번호 변경
+                        </button>
                     </p>
                 </form>
             </div>
