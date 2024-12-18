@@ -313,6 +313,31 @@ app.post("/phoneupdate", (req, res) => {
     });
 });
 
+app.post("/deleteuser", (req, res) => {
+    const userID = req.body.userID;
+    const query = "DELETE FROM `react_project`.`user_` WHERE id=?;";
+    connection.query(query, [userID], function (err) {
+        if (err) {
+            console.log("##delete user fail", err);
+            return res.status(500).json({
+                success: false,
+                message: "서버 오류가 발생했습니다.",
+                error: err,
+            });
+        } else {
+            try {
+                return res.status(200).json({
+                    success: true,
+                });
+            } catch (error) {
+                return res.status(200).json({
+                    success: false,
+                });
+            }
+        }
+    });
+});
+
 app.listen(port, () => {
     console.log(`Connect at http://localhost:${port}`);
 });

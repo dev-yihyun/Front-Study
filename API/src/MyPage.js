@@ -361,13 +361,50 @@ function MyPage() {
             alert("비밀번호가 맞지 않습니다.");
         }
     };
+
+    const deleteUser = useMutation(
+        (deleteUser) =>
+            fetch("http://localhost:3001/deleteuser", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(deleteUser),
+            }).then((res) => {
+                if (!res.ok) throw new Error("비밀번호 변경 실패");
+                return res.json();
+            }),
+        {
+            onSuccess: (data) => {
+                if (data.success) {
+                    alert("탈퇴가 완료되었습니다. 로그인화면으로 돌아갑니다.");
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("userID");
+                    navigate("/");
+                } else {
+                    alert("회원탈퇴에 실패했습니다. 메인으로 돌아갑니다.");
+                    navigate("/main");
+                }
+            },
+            onError: (error) => {
+                console.error(error);
+                alert("서버 오류가 발생했습니다.");
+                navigate("/");
+            },
+            onSettled: () => {
+                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+            },
+        }
+    );
+    const onDelete = () => {
+        deleteUser.mutate({
+            userID: userID,
+        });
+    };
     if (isLoading) return <p>데이터를 불러오는 중...</p>;
     if (isError) {
         alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
         navigate("/");
         return null;
     }
-
     return (
         <>
             <Link to="/main">홈</Link>
@@ -500,7 +537,9 @@ function MyPage() {
             </div>
             <hr />
             <div>
-                <button>회원 탈퇴</button>
+                <button type="button" onClick={onDelete}>
+                    회원 탈퇴
+                </button>
             </div>
         </>
     );
