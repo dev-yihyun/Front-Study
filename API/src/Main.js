@@ -10,7 +10,6 @@ const Button = styled.button`
 function MainBlock() {
     const userID = localStorage.getItem("userID");
     const navigate = useNavigate();
-
     const [campData, setCampData] = useState(); //api에서 불러온 데이터
     const [totalData, setTotalData] = useState(0); //api 총 데이터 양
     const numOfRows = 10;
@@ -20,7 +19,10 @@ function MainBlock() {
 
     const totalPage = Math.ceil(totalData / numOfRows); // 최대 페이지 계산
 
+    const [loading, setLoading] = useState(false); //api 로딩
+
     const fetchData = async () => {
+        setLoading(true);
         const API_URL = `https://apis.data.go.kr/B551011/GoCamping/basedList?numOfRows=${numOfRows}&pageNo=${pageNo.current}&MobileOS=ETC&MobileApp=WebTest&serviceKey=${process.env.REACT_APP_API_KEY}&_type=JSON`; //api url
         try {
             const response = await axios.get(API_URL);
@@ -31,6 +33,7 @@ function MainBlock() {
                 <p>{err.message} : 데이터를 불러오는 중 오류가 발생했습니다. 다시 시도해 주세요.</p>
             );
         } finally {
+            setLoading(false);
         }
     };
 
@@ -114,32 +117,37 @@ function MainBlock() {
             <p>
                 <Link to="/signin">회원가입</Link>
             </p> */}
-
-            <CampListBlock campData={campData} />
-            <button onClick={onPrevPage}>이전 페이지</button>
-            <button onClick={onPrev}>이전</button>
-            {Array.from(
-                {
-                    length: Math.min(
-                        pageButtonNumber,
-                        totalPage - currentPageGroup * pageButtonNumber
-                    ),
-                },
-                (_, index) => {
-                    const pageIndex = currentPageGroup * pageButtonNumber + index + 1;
-                    return (
-                        <Button
-                            key={index}
-                            onClick={() => onGoPage(index)}
-                            $active={pageIndex === pageNo.current}
-                        >
-                            {pageIndex}
-                        </Button>
-                    );
-                }
+            {loading ? (
+                <p>데이터를 불러오는 중입니다.</p>
+            ) : (
+                <>
+                    <CampListBlock campData={campData} />
+                    <button onClick={onPrevPage}>이전 페이지</button>
+                    <button onClick={onPrev}>이전</button>
+                    {Array.from(
+                        {
+                            length: Math.min(
+                                pageButtonNumber,
+                                totalPage - currentPageGroup * pageButtonNumber
+                            ),
+                        },
+                        (_, index) => {
+                            const pageIndex = currentPageGroup * pageButtonNumber + index + 1;
+                            return (
+                                <Button
+                                    key={index}
+                                    onClick={() => onGoPage(index)}
+                                    $active={pageIndex === pageNo.current}
+                                >
+                                    {pageIndex}
+                                </Button>
+                            );
+                        }
+                    )}
+                    <button onClick={onNext}>다음</button>
+                    <button onClick={onNextPage}>다음 페이지</button>
+                </>
             )}
-            <button onClick={onNext}>다음</button>
-            <button onClick={onNextPage}>다음 페이지</button>
         </>
     );
 }
