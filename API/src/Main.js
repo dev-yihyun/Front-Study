@@ -10,20 +10,20 @@ const Button = styled.button`
 function MainBlock() {
     const userID = localStorage.getItem("userID");
     const navigate = useNavigate();
-    const [campData, setCampData] = useState(); //api에서 불러온 데이터
-    const [totalData, setTotalData] = useState(0); //api 총 데이터 양
+    const [campData, setCampData] = useState();
+    const [totalData, setTotalData] = useState(0);
     const numOfRows = 10;
     const pageNo = useRef(1);
-    const pageButtonNumber = 5; // 페이지네이션 숫자 버튼 개수
-    const [currentPageGroup, setCurrentPageGroup] = useState(0); // 현재 페이지 그룹
+    const pageButtonNumber = 5;
+    const [currentPageGroup, setCurrentPageGroup] = useState(0);
 
-    const totalPage = Math.ceil(totalData / numOfRows); // 최대 페이지 계산
+    const totalPage = Math.ceil(totalData / numOfRows);
 
-    const [loading, setLoading] = useState(false); //api 로딩
+    const [loading, setLoading] = useState(false);
 
     const fetchData = async () => {
         setLoading(true);
-        const API_URL = `https://apis.data.go.kr/B551011/GoCamping/basedList?numOfRows=${numOfRows}&pageNo=${pageNo.current}&MobileOS=ETC&MobileApp=WebTest&serviceKey=${process.env.REACT_APP_API_KEY}&_type=JSON`; //api url
+        const API_URL = `https://apis.data.go.kr/B551011/GoCamping/basedList?numOfRows=${numOfRows}&pageNo=${pageNo.current}&MobileOS=ETC&MobileApp=WebTest&serviceKey=${process.env.REACT_APP_API_KEY}&_type=JSON`;
         try {
             const response = await axios.get(API_URL);
             setCampData(response?.data?.response?.body?.items?.item);
@@ -42,22 +42,16 @@ function MainBlock() {
     }, []);
 
     useEffect(() => {
-        // 렌더링 이후에 탐색 수행
         if (!userID) {
             alert("로그인 후 이용 가능합니다.");
-            navigate("/"); // navigate는 useEffect에서 실행
+            navigate("/");
         }
     }, [userID, navigate]);
 
     if (!userID) {
-        // 리다이렉트 중에는 아무것도 렌더링하지 않음
         return null;
     }
-    //또는
-    // if (!userID) {
-    //     alert("로그인 후 이용 가능합니다.");
-    //     navigate("/");
-    // }
+
     const onGoPage = (index) => {
         pageNo.current = currentPageGroup * pageButtonNumber + index + 1;
         fetchData();
@@ -96,12 +90,9 @@ function MainBlock() {
     };
 
     const onLogout = () => {
-        // 1. 토큰 삭제
         localStorage.removeItem("token");
         localStorage.removeItem("userID");
-        // 2. 사용자에게 메시지 표시 (옵션)
         alert("로그아웃되었습니다.");
-        // 3. 로그인 페이지로 이동
         navigate("/");
     };
 
@@ -111,12 +102,6 @@ function MainBlock() {
             <button onClick={onLogout}>로그아웃</button>
             <Link to="/mypage">마이페이지</Link>
 
-            {/* <p>
-                <Link to="/login">로그인</Link>
-            </p>
-            <p>
-                <Link to="/signin">회원가입</Link>
-            </p> */}
             {loading ? (
                 <p>데이터를 불러오는 중입니다.</p>
             ) : (

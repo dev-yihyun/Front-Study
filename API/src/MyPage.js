@@ -9,14 +9,27 @@ function MyPage() {
     const [inputEmail, setInputEmail] = useState("");
     const navigate = useNavigate();
     const queryClient = useQueryClient();
-    const regexEmail = /\S+@\S+\.\S+/;
+    const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     const [checkEmail, setCheckEmail] = useState(false);
     const [EmailCheckMessage, setEmailCheckMessage] = useState("");
+
+    const [currentPassword, setCurrentPassword] = useState("");
+    const [password, setPassword] = useState("");
+    const [checkpassword, setCheckPassword] = useState("");
+    const regexPW = /^[a-zA-Z0-9!@#$%^&*+\-=_?]*$/;
+
+    const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
+    const [validation, setValidation] = useState(false);
+
+    const [showPhoneInput, setShowPhoneInput] = useState(false);
+    const [inputPhone, setInputPhone] = useState("");
+    const [checkPhone, setCheckPhone] = useState(false);
+    const [phoneCheckMessage, setPhoneCheckMessage] = useState("");
 
     const onShowEmailInput = () => {
         setShowEmailInput(!showEmailInput);
         if (!showEmailInput && userInfoData) {
-            // 이메일 입력창을 열 때 상태 초기화
             setInputEmail(userInfoData.message.email);
             setCheckEmail(true);
             setEmailCheckMessage("");
@@ -26,7 +39,6 @@ function MyPage() {
     const onInputEmail = (event) => {
         setInputEmail(event.target.value);
         if (inputEmail.trim()) {
-            console.log("##공백");
             setCheckEmail(true);
             setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
         }
@@ -48,7 +60,6 @@ function MyPage() {
         return formattedDate;
     };
 
-    // Fetch user info using react-query
     const {
         data: userInfoData,
         isLoading,
@@ -69,12 +80,11 @@ function MyPage() {
                 return res.json();
             }),
         {
-            enabled: !!userID, // Only run query if userID exists
-            staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+            enabled: !!userID,
+            staleTime: 5 * 60 * 1000,
         }
     );
 
-    // Update email mutation
     const updateEmailMutation = useMutation(
         (newEmail) =>
             fetch("http://localhost:3001/emailupdate", {
@@ -100,7 +110,7 @@ function MyPage() {
                 navigate("/");
             },
             onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+                queryClient.invalidateQueries(["userInfo", userID]);
             },
         }
     );
@@ -113,7 +123,6 @@ function MyPage() {
     };
     const onEmailCancel = () => {
         if (userInfoData) {
-            // 이메일 입력창을 닫을 때 현재 이메일로 리셋
             setInputEmail(userInfoData.message.email);
         }
         setShowEmailInput(false);
@@ -156,22 +165,17 @@ function MyPage() {
         }
     );
 
-    const [showPhoneInput, setShowPhoneInput] = useState(false);
-    const [inputPhone, setInputPhone] = useState("");
-    const [checkPhone, setCheckPhone] = useState(false);
-    const [phoneCheckMessage, setPhoneCheckMessage] = useState("");
     const formatPhoneNumber = (value) => {
-        // 숫자만 남기기
         const cleaned = value.replace(/\D/g, "");
-        // 포맷 적용: 010-1234-5678
         if (cleaned.length <= 3) {
-            return cleaned; // 3자리 이하 그대로
+            return cleaned;
         } else if (cleaned.length <= 7) {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`; // 010-123
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
         } else {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`; // 010-1234-5678
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
         }
     };
+
     const onShowPhoneInput = () => {
         setShowPhoneInput(!showPhoneInput);
         if (!showPhoneInput && userInfoData) {
@@ -180,49 +184,37 @@ function MyPage() {
             setPhoneCheckMessage("");
         }
     };
+
     const onPhoneCancel = () => {
         if (userInfoData) {
             setInputPhone(userInfoData?.message?.phone);
         }
         setShowPhoneInput(false);
     };
+
     const onInputPhone = (event) => {
         const value = event.target.value;
         const formattedValue = formatPhoneNumber(value);
         setInputPhone(formattedValue);
-        // 전화번호가 010-1234-5678 형식인지 확인
         if (inputPhone.trim()) {
             setCheckPhone(true);
             setPhoneCheckMessage("전화번호를 정확하게 입력해 주세요.");
         }
         if (/^\d{3}-\d{4}-\d{4}$/.test(formattedValue)) {
-            setCheckPhone(false); // 형식에 맞으면 오류 없음
+            setCheckPhone(false);
             setPhoneCheckMessage("");
         } else {
-            setCheckPhone(true); // 형식이 틀리면 오류 있음
+            setCheckPhone(true);
             setPhoneCheckMessage("전화번호를 올바른 형식으로 입력해 주세요.");
         }
     };
+
     const onSavePhone = () => {
         updatePhoneMutation.mutate({
             userID: userID,
             inputPhone: inputPhone,
         });
     };
-
-    const [currentPassword, setCurrentPassword] = useState(""); //현재 비밀번호
-    const [password, setPassword] = useState(""); // reset password
-    const [checkpassword, setCheckPassword] = useState(""); // check password
-    const regexPW = /^[a-zA-Z0-9!@#$%^&*+\-=_?]*$/; // 비밀번호 정규식
-    const [validationPW, setvalidationPW] = useState(false); // reset password정규식 맞는지 확인
-    const [validationCheckPW, setvalidationCheckPW] = useState(false);
-    // check password정규식 맞는지 확인
-
-    // 비밀번호 오류 메시지
-    const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
-
-    //정규식 확인
-    const [validation, setValidation] = useState(false);
 
     const onCurrentPassword = (event) => {
         setCurrentPassword(event.target.value);
@@ -236,11 +228,11 @@ function MyPage() {
             setValidation(false);
             setPasswordErrorMessage("");
         } else {
-            setValidation(false); // 비밀번호가 아직 올바르지 않다는 상태를 설정
-            setPasswordErrorMessage(""); // 사용자에게 보이는 메시지를 비움.
+            setValidation(false);
+            setPasswordErrorMessage("");
         }
     };
-    // reset password
+
     const onPassword = (event) => {
         if (regexPW.test(event.target.value)) {
             setPassword(event.target.value);
@@ -250,7 +242,7 @@ function MyPage() {
         }
         validationPassword(event.target.value, checkpassword);
     };
-    // check password
+
     const onCheckPassword = (event) => {
         if (regexPW.test(event.target.value)) {
             setCheckPassword(event.target.value);
@@ -260,6 +252,7 @@ function MyPage() {
         }
         validationPassword(password, event.target.value);
     };
+
     const userCheck = useMutation(
         (userData) =>
             fetch("http://localhost:3001/login", {
@@ -277,11 +270,7 @@ function MyPage() {
         {
             onSuccess: (data) => {
                 if (data.success) {
-                    //현재 비밀번호 맞음
-                    console.log("##현재 비밀번호 맞음");
                 } else {
-                    //현재 비밀번호 안 맞음
-                    console.log("##현재 비밀번호 안 맞음");
                     alert("현재 비밀번호가 맞지 않습니다.");
                 }
             },
@@ -291,7 +280,7 @@ function MyPage() {
                 navigate("/");
             },
             onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+                queryClient.invalidateQueries(["userInfo", userID]);
             },
         }
     );
@@ -324,12 +313,11 @@ function MyPage() {
                 navigate("/");
             },
             onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+                queryClient.invalidateQueries(["userInfo", userID]);
             },
         }
     );
 
-    // DB
     const onRestPassword = () => {
         if (password === checkpassword) {
             userCheck.mutate(
@@ -340,13 +328,11 @@ function MyPage() {
                 {
                     onSuccess: (data) => {
                         if (data.success) {
-                            // 현재 비밀번호가 맞다면, 비밀번호 업데이트 실행
                             updatePasswordMutation.mutate({
                                 inputID: userID,
                                 password: password,
                             });
                         } else {
-                            // 현재 비밀번호가 틀림
                             alert("현재 비밀번호가 맞지 않습니다.");
                             setPasswordErrorMessage("현재 비밀번호가 맞지 않습니다.");
                         }
@@ -390,21 +376,25 @@ function MyPage() {
                 navigate("/");
             },
             onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]); // Invalidate cache to refresh user info
+                queryClient.invalidateQueries(["userInfo", userID]);
             },
         }
     );
+
     const onDelete = () => {
         deleteUser.mutate({
             userID: userID,
         });
     };
+
     if (isLoading) return <p>데이터를 불러오는 중...</p>;
+
     if (isError) {
         alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
         navigate("/");
         return null;
     }
+
     return (
         <>
             <Link to="/main">홈</Link>

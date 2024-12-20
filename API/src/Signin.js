@@ -4,15 +4,25 @@ import "./index.css";
 
 function Signin() {
     const [inputID, setInputID] = useState("");
-    const [inputPW, setInputPW] = useState("");
     const [validationID, setvalidationID] = useState(false);
-    const [validationPW, setvalidationPW] = useState(false);
-
     const [idCheck, setIDCheck] = useState(false);
     const [idCheckMessage, setIDCheckMessage] = useState("");
 
+    const [inputPW, setInputPW] = useState("");
+    const [validationPW, setvalidationPW] = useState(false);
+
+    const [inputEmail, setinputEmail] = useState("");
+    const [checkEmail, setCheckEmail] = useState(false);
+    const [EmailCheckMessage, setEmailCheckMessage] = useState("");
+
+    const [inputName, setInputName] = useState("");
+
+    const [inputPhone, setInputPhone] = useState("");
+    const [checkPhone, setCheckPhone] = useState(false);
+
     const regexID = /^[a-zA-Z0-9]*$/;
     const regexPW = /^[a-zA-Z0-9!@#$%^&*+\-=_?]*$/;
+    const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 
     const navigate = useNavigate();
 
@@ -35,48 +45,36 @@ function Signin() {
             setvalidationPW(true);
         }
     };
-    const [inputName, setInputName] = useState("");
+
     const onInputName = (event) => {
         setInputName(event.target.value);
     };
-    // 010 - 0000 - 0000
-    const [inputPhone, setInputPhone] = useState("");
-    const [checkPhone, setCheckPhone] = useState(false);
-    // 전화번호 포맷팅 함수
+
     const formatPhoneNumber = (value) => {
-        // 숫자만 남기기
         const cleaned = value.replace(/\D/g, "");
-        // 포맷 적용: 010-1234-5678
         if (cleaned.length <= 3) {
-            return cleaned; // 3자리 이하 그대로
+            return cleaned;
         } else if (cleaned.length <= 7) {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`; // 010-123
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
         } else {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`; // 010-1234-5678
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
         }
     };
+
     const onInputPhone = (event) => {
         const value = event.target.value;
         const formattedValue = formatPhoneNumber(value);
         setInputPhone(formattedValue);
-        // 전화번호가 010-1234-5678 형식인지 확인
         if (/^\d{3}-\d{4}-\d{4}$/.test(formattedValue)) {
-            setCheckPhone(false); // 형식에 맞으면 오류 없음
+            setCheckPhone(false);
         } else {
-            setCheckPhone(true); // 형식이 틀리면 오류 있음
+            setCheckPhone(true);
         }
-        // 숫자만 남기기
-        // const numericValue = value.replace(/\D/g, "");
-        // setInputPhone(numericValue);
-        // setInputPhone(formatPhoneNumber(value));
     };
 
-    const [inputEmail, setinputEmail] = useState("");
-    const regexEmail = /\S+@\S+\.\S+/;
-    const [checkEmail, setCheckEmail] = useState(false);
-    const [EmailCheckMessage, setEmailCheckMessage] = useState("");
     const onInputEmail = (event) => {
         setinputEmail(event.target.value);
+
         if (regexEmail.test(inputEmail)) {
             setCheckEmail(false);
             setEmailCheckMessage("");
@@ -84,8 +82,6 @@ function Signin() {
             setCheckEmail(true);
             setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
         }
-        // if (!formData.email) newErrors.email = "Email is required.";
-        // if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = "Email is invalid.";
     };
 
     const onInsertUserDB = () => {
@@ -136,12 +132,14 @@ function Signin() {
         setInputID("");
         setInputPW("");
     };
+
     const onCheckIDAvailability = (e) => {
         if (!inputID.trim()) {
             alert("아이디를 입력해 주세요");
             setIDCheck(false);
             return;
         }
+
         fetch("http://localhost:3001/idcheck", {
             method: "POST",
             headers: {
@@ -157,11 +155,9 @@ function Signin() {
             })
             .then((json) => {
                 if (json.success) {
-                    // alert("사용 가능한 아이디입니다.");
                     setIDCheck(true);
                     setIDCheckMessage("사용 가능한 아이디입니다.");
                 } else {
-                    // alert("사용할수 없는 아이디입니다.");
                     setIDCheck(false);
                     setIDCheckMessage("사용할수 없는 아이디입니다.");
                 }
@@ -250,8 +246,7 @@ function Signin() {
                         name="inputPhone"
                         value={inputPhone}
                         onChange={onInputPhone}
-                        maxLength={13} // 010-1234-5678 기준 최대 길이 설정
-                        // maxLength={11} // 01012345678 기준 최대 길이 설정
+                        maxLength={13}
                     />
                 </p>
                 {checkPhone && (
@@ -294,21 +289,3 @@ function Signin() {
 }
 
 export default Signin;
-// const checkEmail = () => {
-//     if (regexEmail.test(inputEmail)) {
-//         setCheckEmail(true);
-//         setEmailCheckMessage("");
-//     } else {
-//         setCheckEmail(false);
-//         setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
-//     }
-//     // if (regexEmail.test(inputEmail)) {
-//     //     //사용 가능한 메일 입니다.
-//     //     setCheckEmail(true);
-//     //     setEmailCheckMessage("사용 가능한 메일입니다.");
-//     // } else {
-//     //     //사용할 수 없는 메일입니다.
-//     //     setCheckEmail(false);
-//     //     setEmailCheckMessage("사용할 수 없는 메일입니다.");
-//     // }
-// };

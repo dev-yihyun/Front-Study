@@ -6,12 +6,15 @@ function Login() {
     const [inputPW, setInputPW] = useState("");
 
     const navigate = useNavigate();
+
     const onInputId = (event) => {
         setInputID(event.target.value);
     };
+
     const onInputPW = (event) => {
         setInputPW(event.target.value);
     };
+
     const onLogin = () => {
         if (!inputID.trim() || !inputPW.trim()) {
             alert("ID와 PW를 입력해주세요.");
@@ -59,6 +62,7 @@ function Login() {
         setInputID("");
         setInputPW("");
     };
+
     return (
         <>
             <p>
@@ -105,27 +109,3 @@ function Login() {
 }
 
 export default Login;
-/*
-const onLogin = async () => {
-    try {
-      const response = await fetch('http://localhost:5000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ username, password }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
-
-      const data = await response.json();
-      localStorage.setItem('token', data.token); // JWT 저장
-      alert('Login successful!');
-    } catch (err) {
-      setError('Invalid username or password');
-    }
-  };
-
-*/

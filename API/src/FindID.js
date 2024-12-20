@@ -4,20 +4,21 @@ import { Link, useNavigate } from "react-router-dom";
 function FindID() {
     const [tab, setTab] = useState(false);
     const [isShow, setIsShow] = useState(false);
-    const [inputName, setInputName] = useState("");
-    const [inputEmail, setinputEmail] = useState("");
-    const [inputPhone, setInputPhone] = useState("");
-    const [result, setResult] = useState("");
 
-    const regexEmail = /\S+@\S+\.\S+/;
+    const [inputName, setInputName] = useState("");
+
+    const [inputEmail, setinputEmail] = useState("");
     const [checkEmail, setCheckEmail] = useState(false);
     const [EmailCheckMessage, setEmailCheckMessage] = useState("");
+    const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+    const [inputPhone, setInputPhone] = useState("");
+    const [checkPhone, setCheckPhone] = useState(false);
+    const [result, setResult] = useState("");
 
     const navigate = useNavigate();
 
     const onTab = (e) => {
-        // e.preventDefault();
-        // const selectedTab = e.target.innerText.toLowerCase(); // email 또는 phone 구분
         setTab(e.target.innerText.toLowerCase() === "phone");
         setInputName("");
         setInputPhone("");
@@ -28,18 +29,15 @@ function FindID() {
     const onInputName = (event) => {
         setInputName(event.target.value);
     };
-    const [checkPhone, setCheckPhone] = useState(false);
-    // 전화번호 포맷팅 함수
+
     const formatPhoneNumber = (value) => {
-        // 숫자만 남기기
         const cleaned = value.replace(/\D/g, "");
-        // 포맷 적용: 010-1234-5678
         if (cleaned.length <= 3) {
-            return cleaned; // 3자리 이하 그대로
+            return cleaned;
         } else if (cleaned.length <= 7) {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`; // 010-123
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
         } else {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`; // 010-1234-5678
+            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
         }
     };
 
@@ -47,11 +45,10 @@ function FindID() {
         const value = event.target.value;
         const formattedValue = formatPhoneNumber(value);
         setInputPhone(formattedValue);
-        // 전화번호가 010-1234-5678 형식인지 확인
         if (/^\d{3}-\d{4}-\d{4}$/.test(formattedValue)) {
-            setCheckPhone(false); // 형식에 맞으면 오류 없음
+            setCheckPhone(false);
         } else {
-            setCheckPhone(true); // 형식이 틀리면 오류 있음
+            setCheckPhone(true);
         }
     };
 
@@ -65,6 +62,7 @@ function FindID() {
             setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
         }
     };
+
     const onFind = () => {
         if (!inputName.trim() || (tab ? !inputPhone.trim() : !inputEmail.trim())) {
             alert("정보를 입력해주세요.");
@@ -181,12 +179,3 @@ function FindID() {
 }
 
 export default FindID;
-/*
-페이지 리로드를 막는 방법
-button 타입 명시 :  <button type="button" onClick={onFind}></button>
-또는
-event.preventDefault()를 호출
-만약 버튼이 폼 제출 버튼(type="submit") 역할을 하지 않는다면 방법 2처럼 type="button"을 명시하는 것이 더 직관적입니다.
--> 이 경우 type="submit"을 적용하면 페이지 리로드가 발생한다.
--> 리로드를 막으려면 onSubmit 이벤트 + event.preventDefault()를 넣어줘야한다.
-*/
