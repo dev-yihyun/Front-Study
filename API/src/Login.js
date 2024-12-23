@@ -1,4 +1,6 @@
+import axios from "axios";
 import { useState } from "react";
+import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 function Login() {
@@ -15,6 +17,32 @@ function Login() {
         setInputPW(event.target.value);
     };
 
+    const loginMutation = useMutation(
+        (userData) => axios.post("http://localhost:3001/login", userData),
+        {
+            onSuccess: (response) => {
+                const { data } = response;
+                if (!data || typeof data.success === "undefined") {
+                    throw new Error("서버 응답이 올바르지 않습니다.");
+                }
+
+                if (data.success) {
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("userID", inputID);
+                    alert(data.message || "로그인 성공");
+                    navigate("/main");
+                } else {
+                    alert(data.message || "로그인 실패");
+                }
+            },
+            onError: (error) => {
+                console.error("오류:", error);
+                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
+                navigate("/");
+            },
+        }
+    );
+
     const onLogin = () => {
         if (!inputID.trim() || !inputPW.trim()) {
             alert("ID와 PW를 입력해주세요.");
@@ -28,37 +56,8 @@ function Login() {
             inputPW: inputPW,
         };
 
-        fetch("http://localhost:3001/login", {
-            method: "post",
-            headers: {
-                "content-type": "application/json",
-            },
-            body: JSON.stringify(userData),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`서버 요청 실패: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then((json) => {
-                if (!json || typeof json.success === "undefined") {
-                    throw new Error("서버 응답이 올바르지 않습니다.");
-                }
-                if (json.success) {
-                    localStorage.setItem("token", json.token);
-                    localStorage.setItem("userID", inputID);
-                    alert(json.message || "로그인 성공");
-                    navigate("/main");
-                } else {
-                    alert(json.message || "로그인 실패");
-                }
-            })
-            .catch((error) => {
-                console.error("오류:", error);
-                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-                navigate("/");
-            });
+        loginMutation.mutate(userData);
+
         setInputID("");
         setInputPW("");
     };
