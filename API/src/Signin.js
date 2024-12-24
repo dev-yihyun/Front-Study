@@ -1,17 +1,18 @@
 import { useState } from "react";
+import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 import "./index.css";
 
 function Signin() {
     const [inputID, setInputID] = useState("");
-    const [validationID, setvalidationID] = useState(false);
+    const [validationID, setValidationID] = useState(false);
     const [idCheck, setIDCheck] = useState(false);
     const [idCheckMessage, setIDCheckMessage] = useState("");
 
     const [inputPW, setInputPW] = useState("");
-    const [validationPW, setvalidationPW] = useState(false);
+    const [validationPW, setValidationPW] = useState(false);
 
-    const [inputEmail, setinputEmail] = useState("");
+    const [inputEmail, setInputEmail] = useState("");
     const [checkEmail, setCheckEmail] = useState(false);
     const [EmailCheckMessage, setEmailCheckMessage] = useState("");
 
@@ -28,22 +29,14 @@ function Signin() {
 
     const onInputId = (event) => {
         setInputID(event.target.value);
-        if (regexID.test(event.target.value)) {
-            setvalidationID("");
-        } else {
-            setvalidationID(true);
-        }
+        setValidationID(!regexID.test(event.target.value));
         setIDCheck(false);
         setIDCheckMessage("");
     };
 
     const onInputPW = (event) => {
-        if (regexPW.test(event.target.value)) {
-            setInputPW(event.target.value);
-            setvalidationPW("");
-        } else {
-            setvalidationPW(true);
-        }
+        setInputPW(event.target.value);
+        setValidationPW(!regexPW.test(event.target.value));
     };
 
     const onInputName = (event) => {
@@ -65,111 +58,77 @@ function Signin() {
         const value = event.target.value;
         const formattedValue = formatPhoneNumber(value);
         setInputPhone(formattedValue);
-        if (/^\d{3}-\d{4}-\d{4}$/.test(formattedValue)) {
-            setCheckPhone(false);
-        } else {
-            setCheckPhone(true);
-        }
+        setCheckPhone(!/^\d{3}-\d{4}-\d{4}$/.test(formattedValue));
     };
 
     const onInputEmail = (event) => {
-        setinputEmail(event.target.value);
-
-        if (regexEmail.test(inputEmail)) {
-            setCheckEmail(false);
-            setEmailCheckMessage("");
-        } else {
-            setCheckEmail(true);
-            setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
-        }
+        const value = event.target.value;
+        setInputEmail(value);
+        setCheckEmail(!regexEmail.test(value));
+        setEmailCheckMessage(regexEmail.test(value) ? "" : "이메일 주소가 정확한지 확인해 주세요.");
     };
 
-    const onInsertUserDB = () => {
-        if (!inputID.trim() || !inputPW.trim()) {
-            alert("ID와 PW를 입력해주세요.");
-            setInputID("");
-            setInputPW("");
-            return;
-        }
-
-        const userData = {
-            inputID: inputID,
-            inputPW: inputPW,
-            inputName: inputName,
-            inputPhone: inputPhone,
-            inputEmail: inputEmail,
-        };
-
-        fetch("http://localhost:3001/signin", {
-            method: "post",
-            headers: {
-                "content-type": "application/json",
-            },
-            body: JSON.stringify(userData),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`서버 요청 실패: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then((json) => {
-                if (!json || typeof json.success === "undefined") {
-                    throw new Error("서버 응답이 올바르지 않습니다.");
-                }
-                if (json.success) {
-                    alert(json.message);
-                    navigate("/");
-                } else {
-                    alert(json.message || "회원가입에 실패했습니다.");
-                }
-            })
-            .catch((error) => {
-                console.error("오류:", error);
-                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-                navigate("/");
+    const { mutate: checkIDAvailability, isLoading: isCheckingID } = useMutation(
+        async () => {
+            const res = await fetch("http://localhost:3001/idcheck", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify({ inputID }),
             });
-        setInputID("");
-        setInputPW("");
-    };
-
-    const onCheckIDAvailability = (e) => {
-        if (!inputID.trim()) {
-            alert("아이디를 입력해 주세요");
-            setIDCheck(false);
-            return;
-        }
-
-        fetch("http://localhost:3001/idcheck", {
-            method: "POST",
-            headers: {
-                "content-type": "application/json",
-            },
-            body: JSON.stringify({ inputID: inputID }),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`서버 요청 실패: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then((json) => {
-                if (json.success) {
+            if (!res.ok) {
+                throw new Error(`서버 요청 실패: ${res.status}`);
+            }
+            return res.json();
+        },
+        {
+            onSuccess: (data) => {
+                if (data.success) {
                     setIDCheck(true);
                     setIDCheckMessage("사용 가능한 아이디입니다.");
                 } else {
                     setIDCheck(false);
-                    setIDCheckMessage("사용할수 없는 아이디입니다.");
+                    setIDCheckMessage("사용할 수 없는 아이디입니다.");
                 }
-            })
-            .catch((error) => {
-                console.error("오류:", error);
-                alert("중복 체크 중 오류가 발생했습니다. 메인으로 이동합니다.");
+            },
+            onError: () => {
                 setIDCheck(false);
-                navigate("/");
+                setIDCheckMessage("ID 확인 중 오류가 발생했습니다.");
+            },
+        }
+    );
+
+    const { mutate: insertUser, isLoading: isSigningUp } = useMutation(
+        async () => {
+            const userData = {
+                inputID,
+                inputPW,
+                inputName,
+                inputPhone,
+                inputEmail,
+            };
+            const res = await fetch("http://localhost:3001/signin", {
+                method: "POST",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify(userData),
             });
-        e.preventDefault();
-    };
+            if (!res.ok) {
+                throw new Error(`서버 요청 실패: ${res.status}`);
+            }
+            return res.json();
+        },
+        {
+            onSuccess: (data) => {
+                alert(data.message);
+                if (data.success) {
+                    navigate("/");
+                }
+            },
+            onError: (error) => {
+                console.error("오류:", error);
+                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
+            },
+        }
+    );
 
     return (
         <>
@@ -191,10 +150,11 @@ function Signin() {
                         }}
                     />
                     <button
-                        onClick={onCheckIDAvailability}
-                        disabled={!inputID.trim() || validationID}
+                        type="button"
+                        onClick={() => checkIDAvailability()}
+                        disabled={!inputID.trim() || validationID || isCheckingID}
                     >
-                        아이디 중복 검사
+                        {isCheckingID ? "검사 중..." : "아이디 중복 검사"}
                     </button>
                 </p>
                 <p style={{ color: idCheck ? "green" : "red" }}>{idCheckMessage}</p>
@@ -267,7 +227,7 @@ function Signin() {
                 <p style={{ color: !checkEmail ? "green" : "red" }}>{EmailCheckMessage}</p>
                 <button
                     type="button"
-                    onClick={onInsertUserDB}
+                    onClick={() => insertUser()}
                     disabled={
                         !inputID.trim() ||
                         !inputPW.trim() ||
@@ -278,10 +238,11 @@ function Signin() {
                         !inputPhone ||
                         !inputEmail ||
                         checkEmail ||
-                        checkPhone
+                        checkPhone ||
+                        isSigningUp
                     }
                 >
-                    회원가입
+                    {isSigningUp ? "회원가입 중..." : "회원가입"}
                 </button>
             </form>
         </>

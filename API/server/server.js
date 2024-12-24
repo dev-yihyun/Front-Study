@@ -43,7 +43,7 @@ app.post("/signin", (req, res) => {
                     error: err,
                 });
             } else {
-                console.log("성공");
+                console.log("회원가입 성공");
                 return res.status(200).json({
                     success: true,
                     message: "회원가입이 완료되었습니다.",
