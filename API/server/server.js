@@ -138,6 +138,7 @@ app.post("/findid", (req, res) => {
             });
         } else {
             if (result.length > 0) {
+                console.log("ID 찾기 성공");
                 return res.status(200).json({
                     success: true,
                     message: result,

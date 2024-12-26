@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
 
 function FindID() {
@@ -7,7 +8,7 @@ function FindID() {
 
     const [inputName, setInputName] = useState("");
 
-    const [inputEmail, setinputEmail] = useState("");
+    const [inputEmail, setInputEmail] = useState("");
     const [checkEmail, setCheckEmail] = useState(false);
     const [EmailCheckMessage, setEmailCheckMessage] = useState("");
     const regexEmail = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -17,18 +18,6 @@ function FindID() {
     const [result, setResult] = useState("");
 
     const navigate = useNavigate();
-
-    const onTab = (e) => {
-        setTab(e.target.innerText.toLowerCase() === "phone");
-        setInputName("");
-        setInputPhone("");
-        setinputEmail("");
-        setIsShow(false);
-    };
-
-    const onInputName = (event) => {
-        setInputName(event.target.value);
-    };
 
     const formatPhoneNumber = (value) => {
         const cleaned = value.replace(/\D/g, "");
@@ -41,33 +30,69 @@ function FindID() {
         }
     };
 
+    const mutation = useMutation(
+        (userData) =>
+            fetch("http://localhost:3001/findid", {
+                method: "post",
+                headers: { "content-type": "application/json" },
+                body: JSON.stringify(userData),
+            }).then((res) => {
+                if (!res.ok) {
+                    throw new Error(`서버 요청 실패: ${res.status}`);
+                }
+                return res.json();
+            }),
+        {
+            onSuccess: (data) => {
+                if (!data || typeof data.success === "undefined") {
+                    throw new Error("서버 응답이 올바르지 않습니다.");
+                }
+                if (data.success) {
+                    setResult(`result : ${data?.message[0]?.id} `);
+                } else {
+                    setResult(`result : ${data?.message} `);
+                }
+                setIsShow(true);
+            },
+            onError: (error) => {
+                console.error("오류:", error);
+                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
+                navigate("/");
+            },
+        }
+    );
+
+    const onTab = (e) => {
+        setTab(e.target.innerText.toLowerCase() === "phone");
+        setInputName("");
+        setInputPhone("");
+        setInputEmail("");
+        setIsShow(false);
+    };
+
+    const onInputName = (event) => {
+        setInputName(event.target.value);
+    };
+
     const onInputPhone = (event) => {
         const value = event.target.value;
         const formattedValue = formatPhoneNumber(value);
         setInputPhone(formattedValue);
-        if (/^\d{3}-\d{4}-\d{4}$/.test(formattedValue)) {
-            setCheckPhone(false);
-        } else {
-            setCheckPhone(true);
-        }
+        setCheckPhone(!/^\d{3}-\d{4}-\d{4}$/.test(formattedValue));
     };
 
     const onInputEmail = (event) => {
-        setinputEmail(event.target.value);
-        if (regexEmail.test(inputEmail)) {
-            setCheckEmail(false);
-            setEmailCheckMessage("");
-        } else {
-            setCheckEmail(true);
-            setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
-        }
+        const value = event.target.value;
+        setInputEmail(value);
+        setCheckEmail(!regexEmail.test(value));
+        setEmailCheckMessage(regexEmail.test(value) ? "" : "이메일 주소가 정확한지 확인해 주세요.");
     };
 
     const onFind = () => {
         if (!inputName.trim() || (tab ? !inputPhone.trim() : !inputEmail.trim())) {
             alert("정보를 입력해주세요.");
             setInputName("");
-            tab ? setInputPhone("") : setinputEmail("");
+            tab ? setInputPhone("") : setInputEmail("");
             return;
         }
         const userData = {
@@ -75,36 +100,7 @@ function FindID() {
             contact: tab ? inputPhone : inputEmail,
             type: tab ? "phone" : "email",
         };
-
-        fetch("http://localhost:3001/findid", {
-            method: "post",
-            headers: {
-                "content-type": "application/json",
-            },
-            body: JSON.stringify(userData),
-        })
-            .then((res) => {
-                if (!res.ok) {
-                    throw new Error(`서버 요청 실패: ${res.status}`);
-                }
-                return res.json();
-            })
-            .then((json) => {
-                if (!json || typeof json.success === "undefined") {
-                    throw new Error("서버 응답이 올바르지 않습니다.");
-                }
-                if (json.success) {
-                    setResult(`result : ${json?.message[0]?.id} `);
-                } else {
-                    setResult(`result : ${json?.message} `);
-                }
-                setIsShow(true);
-            })
-            .catch((error) => {
-                console.error("오류:", error);
-                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-                navigate("/");
-            });
+        mutation.mutate(userData);
     };
 
     return (
