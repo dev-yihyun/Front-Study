@@ -171,6 +171,7 @@ app.post("/findpw", (req, res) => {
             });
         } else {
             if (result.length > 0) {
+                console.log("PW 찾기 성공");
                 return res.status(200).json({
                     success: true,
                 });
@@ -197,10 +198,12 @@ app.post("/resetpassword", (req, res) => {
             });
         } else {
             try {
+                console.log("PW update success");
                 return res.status(200).json({
                     success: true,
                 });
             } catch (error) {
+                console.log("PW update err : ", err);
                 return res.status(200).json({
                     success: false,
                 });
