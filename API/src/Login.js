@@ -1,13 +1,11 @@
-import axios from "axios";
 import { useState } from "react";
-import { useMutation } from "react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import useLoginMutation from "./hook/useLoginMutation";
 import "./index.css";
 function Login() {
     const [inputID, setInputID] = useState("");
     const [inputPW, setInputPW] = useState("");
-
-    const navigate = useNavigate();
+    const loginMutation = useLoginMutation(inputID, setInputID, setInputPW);
 
     const onInputId = (event) => {
         setInputID(event.target.value);
@@ -16,32 +14,6 @@ function Login() {
     const onInputPW = (event) => {
         setInputPW(event.target.value);
     };
-
-    const loginMutation = useMutation(
-        (userData) => axios.post("http://localhost:3001/login", userData),
-        {
-            onSuccess: (response) => {
-                const { data } = response;
-                if (!data || typeof data.success === "undefined") {
-                    throw new Error("서버 응답이 올바르지 않습니다.");
-                }
-
-                if (data.success) {
-                    localStorage.setItem("token", data.token);
-                    localStorage.setItem("userID", inputID);
-                    alert(data.message || "로그인 성공");
-                    navigate("/main");
-                } else {
-                    alert(data.message || "로그인 실패");
-                }
-            },
-            onError: (error) => {
-                console.error("오류:", error);
-                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-                navigate("/");
-            },
-        }
-    );
 
     const onLogin = () => {
         if (!inputID.trim() || !inputPW.trim()) {
