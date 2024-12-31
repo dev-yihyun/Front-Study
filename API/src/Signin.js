@@ -1,6 +1,8 @@
 import { useState } from "react";
-import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { formatPhoneNumber } from "./function/formatPhoneNumber";
+import { useCheckIDAvailability } from "./hook/useCheckIDAvailability";
+import { useInsertUser } from "./hook/useInsertUser";
 import "./index.css";
 
 function Signin() {
@@ -27,6 +29,14 @@ function Signin() {
 
     const navigate = useNavigate();
 
+    const userData = () => ({
+        inputID,
+        inputPW,
+        inputName,
+        inputPhone,
+        inputEmail,
+    });
+
     const onInputId = (event) => {
         setInputID(event.target.value);
         setValidationID(!regexID.test(event.target.value));
@@ -43,17 +53,6 @@ function Signin() {
         setInputName(event.target.value);
     };
 
-    const formatPhoneNumber = (value) => {
-        const cleaned = value.replace(/\D/g, "");
-        if (cleaned.length <= 3) {
-            return cleaned;
-        } else if (cleaned.length <= 7) {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
-        } else {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
-        }
-    };
-
     const onInputPhone = (event) => {
         const value = event.target.value;
         const formattedValue = formatPhoneNumber(value);
@@ -68,65 +67,33 @@ function Signin() {
         setEmailCheckMessage(regexEmail.test(value) ? "" : "이메일 주소가 정확한지 확인해 주세요.");
     };
 
-    const { mutate: checkIDAvailability, isLoading: isCheckingID } = useMutation(
-        async () => {
-            const res = await fetch("http://localhost:3001/idcheck", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify({ inputID }),
-            });
-            if (!res.ok) {
-                throw new Error(`서버 요청 실패: ${res.status}`);
-            }
-            return res.json();
-        },
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                    setIDCheck(true);
-                    setIDCheckMessage("사용 가능한 아이디입니다.");
-                } else {
-                    setIDCheck(false);
-                    setIDCheckMessage("사용할 수 없는 아이디입니다.");
-                }
-            },
-            onError: () => {
+    const { mutate: checkIDAvailability, isLoading: isCheckingID } = useCheckIDAvailability(
+        (data) => {
+            if (data.success) {
+                setIDCheck(true);
+                setIDCheckMessage("사용 가능한 아이디입니다.");
+            } else {
                 setIDCheck(false);
-                setIDCheckMessage("ID 확인 중 오류가 발생했습니다.");
-            },
+                setIDCheckMessage("사용할 수 없는 아이디입니다.");
+            }
+        },
+        () => {
+            setIDCheck(false);
+            setIDCheckMessage("ID 확인 중 오류가 발생했습니다.");
         }
     );
 
-    const { mutate: insertUser, isLoading: isSigningUp } = useMutation(
-        async () => {
-            const userData = {
-                inputID,
-                inputPW,
-                inputName,
-                inputPhone,
-                inputEmail,
-            };
-            const res = await fetch("http://localhost:3001/signin", {
-                method: "POST",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(userData),
-            });
-            if (!res.ok) {
-                throw new Error(`서버 요청 실패: ${res.status}`);
+    const { mutate: insertUser, isLoading: isSigningUp } = useInsertUser(
+        userData,
+        (data) => {
+            alert(data.message);
+            if (data.success) {
+                navigate("/");
             }
-            return res.json();
         },
-        {
-            onSuccess: (data) => {
-                alert(data.message);
-                if (data.success) {
-                    navigate("/");
-                }
-            },
-            onError: (error) => {
-                console.error("오류:", error);
-                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-            },
+        (error) => {
+            console.error("오류:", error);
+            alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
         }
     );
 
