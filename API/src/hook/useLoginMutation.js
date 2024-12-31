@@ -16,6 +16,8 @@ const useLoginMutation = (inputID, setInputID, setInputPW) => {
                 localStorage.setItem("userID", inputID);
                 alert(data.message || "로그인 성공");
                 navigate("/main");
+            } else {
+                alert(data.message || "로그인 실패");
             }
         },
         onError: (error) => {
