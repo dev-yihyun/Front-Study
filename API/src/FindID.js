@@ -1,6 +1,8 @@
 import React, { useState } from "react";
-import { useMutation } from "react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { formatPhoneNumber } from "./function/formatPhoneNumber";
+
+import { useFindID } from "../src/hook/useFindID";
 
 function FindID() {
     const [tab, setTab] = useState(false);
@@ -17,48 +19,17 @@ function FindID() {
     const [checkPhone, setCheckPhone] = useState(false);
     const [result, setResult] = useState("");
 
-    const navigate = useNavigate();
-
-    const formatPhoneNumber = (value) => {
-        const cleaned = value.replace(/\D/g, "");
-        if (cleaned.length <= 3) {
-            return cleaned;
-        } else if (cleaned.length <= 7) {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
-        } else {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
-        }
-    };
-
-    const mutation = useMutation(
-        (userData) =>
-            fetch("http://localhost:3001/findid", {
-                method: "post",
-                headers: { "content-type": "application/json" },
-                body: JSON.stringify(userData),
-            }).then((res) => {
-                if (!res.ok) {
-                    throw new Error(`서버 요청 실패: ${res.status}`);
-                }
-                return res.json();
-            }),
-        {
-            onSuccess: (data) => {
-                if (!data || typeof data.success === "undefined") {
-                    throw new Error("서버 응답이 올바르지 않습니다.");
-                }
-                if (data.success) {
-                    setResult(`result : ${data?.message[0]?.id} `);
-                } else {
-                    setResult(`result : ${data?.message} `);
-                }
-                setIsShow(true);
-            },
-            onError: (error) => {
-                console.error("오류:", error);
-                alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-                navigate("/");
-            },
+    const findID = useFindID(
+        (data) => {
+            if (data.success) {
+                setResult(`result : ${data?.message[0]?.id} `);
+            } else {
+                setResult(`result : ${data?.message} `);
+            }
+            setIsShow(true);
+        },
+        (error) => {
+            console.error("오류:", error);
         }
     );
 
@@ -100,7 +71,7 @@ function FindID() {
             contact: tab ? inputPhone : inputEmail,
             type: tab ? "phone" : "email",
         };
-        mutation.mutate(userData);
+        findID.mutate(userData);
     };
 
     return (
