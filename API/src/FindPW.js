@@ -1,12 +1,14 @@
 import React, { useState } from "react";
-import { useMutation } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { formatPhoneNumber } from "../src/function/formatPhoneNumber";
+import { useFindPassword } from "../src/hook/useFindPassword";
+import { useResetPassword } from "../src/hook/useResetPassword";
 
 function FindPW() {
     const [inputID, setInputID] = useState("");
     const [inputName, setInputName] = useState("");
     const [inputPhone, setInputPhone] = useState("");
-    const [inputEmail, setinputEmail] = useState("");
+    const [inputEmail, setInputEmail] = useState("");
     const [isShow, setIsShow] = useState(false);
 
     const [validationPasswordResult, setValidationPasswordResult] = useState(false);
@@ -34,17 +36,6 @@ function FindPW() {
         setInputName(event.target.value);
     };
 
-    const formatPhoneNumber = (value) => {
-        const cleaned = value.replace(/\D/g, "");
-        if (cleaned.length <= 3) {
-            return cleaned;
-        } else if (cleaned.length <= 7) {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
-        } else {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
-        }
-    };
-
     const onInputPhone = (event) => {
         const value = event.target.value;
         const formattedValue = formatPhoneNumber(value);
@@ -57,41 +48,24 @@ function FindPW() {
     };
 
     const onInputEmail = (event) => {
-        setinputEmail(event.target.value);
-        if (regexEmail.test(inputEmail)) {
-            setCheckEmail(false);
-            setEmailCheckMessage("");
-        } else {
-            setCheckEmail(true);
-            setEmailCheckMessage("이메일 주소가 정확한지 확인해 주세요.");
-        }
+        const value = event.target.value;
+        setInputEmail(value);
+        setCheckEmail(!regexEmail.test(value));
+        setEmailCheckMessage(regexEmail.test(value) ? "" : "이메일 주소가 정확한지 확인해 주세요.");
     };
 
-    const findPasswordMutation = useMutation(
-        async (userData) => {
-            const response = await fetch("http://localhost:3001/findpw", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(userData),
-            });
-            if (!response.ok) {
-                throw new Error(`서버 요청 실패: ${response.status}`);
+    const findPasswordMutation = useFindPassword(
+        (data) => {
+            if (data.success) {
+                setIsShow(true);
+                setPWResult(true);
+            } else {
+                setIsShow(true);
+                setPWResult(false);
             }
-            return response.json();
         },
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                    setIsShow(true);
-                    setPWResult(true);
-                } else {
-                    setIsShow(true);
-                    setPWResult(false);
-                }
-            },
-            onError: () => {
-                alert("서버 요청 중 오류가 발생했습니다.");
-            },
+        () => {
+            alert("서버 요청 중 오류가 발생했습니다.");
         }
     );
 
@@ -137,32 +111,19 @@ function FindPW() {
         }
         validationPassword(password, event.target.value);
     };
-    const resetPasswordMutation = useMutation(
-        async (userData) => {
-            const response = await fetch("http://localhost:3001/resetpassword", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(userData),
-            });
-            if (!response.ok) {
-                throw new Error("비밀번호 변경 실패");
-            }
-            return response.json();
-        },
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                    alert("비밀번호가 성공적으로 변경되었습니다. 로그인 화면으로 돌아갑니다.");
-                    navigate("/");
-                } else {
-                    alert("비밀번호 변경에 실패했습니다.");
-                    navigate("/");
-                }
-            },
-            onError: () => {
-                alert("서버 오류가 발생했습니다.");
+    const resetPasswordMutation = useResetPassword(
+        (data) => {
+            if (data.success) {
+                alert("비밀번호가 성공적으로 변경되었습니다. 로그인 화면으로 돌아갑니다.");
                 navigate("/");
-            },
+            } else {
+                alert("비밀번호 변경에 실패했습니다.");
+                navigate("/");
+            }
+        },
+        () => {
+            alert("서버 오류가 발생했습니다.");
+            navigate("/");
         }
     );
     const onRestPassword = () => {
