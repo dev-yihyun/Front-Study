@@ -1,6 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useQueryClient } from "react-query";
 import { Link, useNavigate } from "react-router-dom";
+import { formatDate } from "../src/function/formatDate";
+import { formatPhoneNumber } from "../src/function/formatPhoneNumber";
+import { useDeleteUser } from "../src/hook/useDeleteUser";
+import { useUpdateEmail } from "../src/hook/useUpdateEmail";
+import { useUpdatePassword } from "../src/hook/useUpdatePassword";
+import { useUpdatePhone } from "../src/hook/useUpdatePhone";
+import { useUserCheck } from "../src/hook/useUserCheck";
+import { useUserInfoData } from "../src/hook/useUserInfoData";
 import "./App.css";
 
 function MyPage() {
@@ -27,6 +35,18 @@ function MyPage() {
     const [checkPhone, setCheckPhone] = useState(false);
     const [phoneCheckMessage, setPhoneCheckMessage] = useState("");
 
+    const { data: userInfoData, isLoading, isError } = useUserInfoData(userID);
+
+    const updateEmailMutation = useUpdateEmail(userID); // useUpdateEmail 훅 사용
+    const updatePhoneMutation = useUpdatePhone(userID); // useUpdatePhone 훅 사용
+    const deleteUser = useDeleteUser(userID, queryClient, navigate);
+
+    // `useUserCheck` 훅 사용
+    const userCheck = useUserCheck(queryClient, navigate);
+
+    // `useUpdatePassword` 훅 사용
+    const updatePasswordMutation = useUpdatePassword(userID, queryClient, navigate);
+
     const onShowEmailInput = () => {
         setShowEmailInput(!showEmailInput);
         if (!showEmailInput && userInfoData) {
@@ -51,70 +71,6 @@ function MyPage() {
         }
     };
 
-    const formatDate = (dateString) => {
-        const date = new Date(dateString);
-        const formattedDate =
-            date.toLocaleDateString("ko-KR") +
-            " " +
-            date.toLocaleTimeString("ko-KR", { hour12: false });
-        return formattedDate;
-    };
-
-    const {
-        data: userInfoData,
-        isLoading,
-        isError,
-    } = useQuery(
-        ["userInfo", userID],
-        () =>
-            fetch("http://localhost:3001/mypage", {
-                method: "post",
-                headers: {
-                    "content-type": "application/json",
-                },
-                body: JSON.stringify({ userID }),
-            }).then((res) => {
-                if (!res.ok) {
-                    throw new Error(`서버 요청 실패: ${res.status}`);
-                }
-                return res.json();
-            }),
-        {
-            enabled: !!userID,
-            staleTime: 5 * 60 * 1000,
-        }
-    );
-
-    const updateEmailMutation = useMutation(
-        (newEmail) =>
-            fetch("http://localhost:3001/emailupdate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newEmail),
-            }).then((res) => {
-                if (!res.ok) throw new Error("이메일 변경 실패");
-                return res.json();
-            }),
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                    alert("이메일이 성공적으로 변경되었습니다. 로그인 화면으로 돌아갑니다.");
-                    navigate("/main");
-                } else {
-                    alert("이메일 수정에 실패했습니다.");
-                }
-            },
-            onError: (error) => {
-                console.error(error);
-                alert("서버 오류가 발생했습니다.");
-                navigate("/");
-            },
-            onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]);
-            },
-        }
-    );
-
     const onSaveEmail = () => {
         updateEmailMutation.mutate({
             userID: userID,
@@ -134,47 +90,6 @@ function MyPage() {
             setInputPhone(userInfoData?.message?.phone);
         }
     }, [userInfoData]);
-
-    const updatePhoneMutation = useMutation(
-        (newPhone) =>
-            fetch("http://localhost:3001/phoneupdate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newPhone),
-            }).then((res) => {
-                if (!res.ok) throw new Error("이메일 변경 실패");
-                return res.json();
-            }),
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                    alert("전화번호가 성공적으로 변경되었습니다. 메인으로 돌아갑니다.");
-                    navigate("/main");
-                } else {
-                    alert("전화번호 수정에 실패했습니다.");
-                }
-            },
-            onError: (error) => {
-                console.error(error);
-                alert("서버 오류가 발생했습니다.");
-                navigate("/");
-            },
-            onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]);
-            },
-        }
-    );
-
-    const formatPhoneNumber = (value) => {
-        const cleaned = value.replace(/\D/g, "");
-        if (cleaned.length <= 3) {
-            return cleaned;
-        } else if (cleaned.length <= 7) {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3)}`;
-        } else {
-            return `${cleaned.slice(0, 3)}-${cleaned.slice(3, 7)}-${cleaned.slice(7)}`;
-        }
-    };
 
     const onShowPhoneInput = () => {
         setShowPhoneInput(!showPhoneInput);
@@ -253,71 +168,6 @@ function MyPage() {
         validationPassword(password, event.target.value);
     };
 
-    const userCheck = useMutation(
-        (userData) =>
-            fetch("http://localhost:3001/login", {
-                method: "post",
-                headers: {
-                    "content-type": "application/json",
-                },
-                body: JSON.stringify(userData),
-            }).then((res) => {
-                if (!res.ok) {
-                    throw new Error(`서버 요청 실패: ${res.status}`);
-                }
-                return res.json();
-            }),
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                } else {
-                    alert("현재 비밀번호가 맞지 않습니다.");
-                }
-            },
-            onError: (error) => {
-                console.error(error);
-                alert("서버 오류가 발생했습니다.");
-                navigate("/");
-            },
-            onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]);
-            },
-        }
-    );
-
-    const updatePasswordMutation = useMutation(
-        (newPassword) =>
-            fetch("http://localhost:3001/resetpassword", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newPassword),
-            }).then((res) => {
-                if (!res.ok) throw new Error("비밀번호 변경 실패");
-                return res.json();
-            }),
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                    alert("비밀번호가 성공적으로 변경되었습니다. 로그인 후 접속해 주세요.");
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("userID");
-                    navigate("/");
-                } else {
-                    alert("비밀번호 수정에 실패했습니다. 메인으로 돌아갑니다.");
-                    navigate("/main");
-                }
-            },
-            onError: (error) => {
-                console.error(error);
-                alert("서버 오류가 발생했습니다.");
-                navigate("/");
-            },
-            onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]);
-            },
-        }
-    );
-
     const onRestPassword = () => {
         if (password === checkpassword) {
             userCheck.mutate(
@@ -332,6 +182,8 @@ function MyPage() {
                                 inputID: userID,
                                 password: password,
                             });
+                            localStorage.removeItem("token");
+                            localStorage.removeItem("userID");
                         } else {
                             alert("현재 비밀번호가 맞지 않습니다.");
                             setPasswordErrorMessage("현재 비밀번호가 맞지 않습니다.");
@@ -347,39 +199,6 @@ function MyPage() {
             alert("비밀번호가 맞지 않습니다.");
         }
     };
-
-    const deleteUser = useMutation(
-        (deleteUser) =>
-            fetch("http://localhost:3001/deleteuser", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(deleteUser),
-            }).then((res) => {
-                if (!res.ok) throw new Error("비밀번호 변경 실패");
-                return res.json();
-            }),
-        {
-            onSuccess: (data) => {
-                if (data.success) {
-                    alert("탈퇴가 완료되었습니다. 로그인화면으로 돌아갑니다.");
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("userID");
-                    navigate("/");
-                } else {
-                    alert("회원탈퇴에 실패했습니다. 메인으로 돌아갑니다.");
-                    navigate("/main");
-                }
-            },
-            onError: (error) => {
-                console.error(error);
-                alert("서버 오류가 발생했습니다.");
-                navigate("/");
-            },
-            onSettled: () => {
-                queryClient.invalidateQueries(["userInfo", userID]);
-            },
-        }
-    );
 
     const onDelete = () => {
         deleteUser.mutate({
