@@ -35,7 +35,7 @@ function MyPage() {
     const [checkPhone, setCheckPhone] = useState(false);
     const [phoneCheckMessage, setPhoneCheckMessage] = useState("");
 
-    const { data: userInfoData, isLoading, isError } = useUserInfoData(userID);
+    const { data: userInfoData } = useUserInfoData(userID);
 
     const updateEmailMutation = useUpdateEmail(userID); // useUpdateEmail 훅 사용
     const updatePhoneMutation = useUpdatePhone(userID); // useUpdatePhone 훅 사용
@@ -206,13 +206,13 @@ function MyPage() {
         });
     };
 
-    if (isLoading) return <p>데이터를 불러오는 중...</p>;
+    // if (isLoading) return <p>데이터를 불러오는 중...</p>;
 
-    if (isError) {
-        alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
-        navigate("/");
-        return null;
-    }
+    // if (isError) {
+    //     alert("네트워크 오류가 발생했습니다. 나중에 다시 시도해주세요.");
+    //     navigate("/");
+    //     return null;
+    // }
 
     return (
         <>
