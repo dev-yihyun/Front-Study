@@ -1,11 +1,6 @@
-type Props = {
-    params: {
-        slug: string; //폴더명과 동일하기
-    };
-};
-
-export default function PantsPage({ params }: Props) {
-    return <h1>{params.slug} 제품 설명 페이지</h1>;
+export default async function PantsPage({ params }: { params: Promise<{ slug: string }> }) {
+    const { slug } = await params;
+    return <h1>{slug} 제품 설명 페이지</h1>;
 }
 //
 /*
