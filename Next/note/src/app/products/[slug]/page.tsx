@@ -23,3 +23,22 @@ export function generateStaticParams() {
         slug: product,
     }));
 }
+
+/*
+dynamic router를 사용하는 페이지를 build 했을 때
+: slug라는 페이지 자체는 static 하게 만들었다.
+페이지에 대한 기본 골격은 서버상에서 pre-rendering html로 만들어 두었다.
+브라우저 상에서 skirt를 입력해서 경로에 접근하면 next js 서버 상에서 미리 만들어둔 html에 slug로 들어온 것을 리액트에 prop 형태로 json 형태로 전달해서 필요한 데이터를
+채워서 다시 html로 만든 다음에 사용자에게 보내준다.
+
+generateStaticParam을 사용할 때
+: 동일하게 미리만들어둔 html페이지에 prop으로 json 형태를 전달하여 html 페이지를 미리 생성해둔다.
+products에 명시한것들에 한에서
+generateStaticParam을 사용하지 않으면 prop으로 전달해서 다시 데이터를 채우는 html페이지를 만드는 것을
+사용자가 요청할때 SSR으로 할지
+아님 빌드할때 명시된것을 미리 만들어 둘지의 차이 
+
+products 페이지는 일반적인 SSG 하나의 파일이 아닌 기본 골격을 가지고 있고
+거기에 필요한 prop을 받는 컴포넌트 페이지다.
+
+*/
