@@ -1,9 +1,7 @@
 import Counter from "@/components/Counter";
-import os from "os";
 
 export default function Home() {
-    console.log("test");
-    console.log(os.hostname());
+    console.log("안녕 - 서버");
 
     return (
         <>

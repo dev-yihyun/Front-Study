@@ -1,3 +1,4 @@
+import { getProduct, getProducts } from "@/service/products";
 import { notFound } from "next/navigation";
 
 type Props = {
@@ -6,23 +7,18 @@ type Props = {
     };
 };
 
-export default function PantsPage({ params }: Props) {
-    if (params.slug === "nothing") {
+export default function PantsPage({ params: { slug } }: Props) {
+    const product = getProduct(slug);
+    if (!product) {
         notFound();
     }
-    return <h1>{params.slug} 제품 설명 페이지</h1>;
+    // 서버 파일에 있는 데이터 중 해당 제품의 정보를 찾아서 그걸 보여줌
+    return <h1>{product} 제품 설명 페이지</h1>;
 }
-/*
-notfound파일은 정의되어있는 존재하는 경로 내에서 notfound 함수가
-호출이 되면 products/not-found.tsx 파일이 호출된다.
 
-404페이지를 내껄로 만들고 싶다면 
-pages/404.tsx로 만들어 사용할 수 있다.
-
-** 파일명이 중요하지 함수명은 중요하지않다.
-*/
 export function generateStaticParams() {
-    const products = ["pants", "skirt"];
+    // 모든 제품의 페이지들을 미리 만들어 둘 수 있게 해둠(SSG)
+    const products = getProducts();
     return products.map((product) => ({
         slug: product,
     }));
