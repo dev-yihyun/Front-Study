@@ -1,10 +1,13 @@
 import { getProducts } from "@/service/products";
 import Link from "next/link";
 
-// const products = ["shirt", "pants", "skirt", "shoes"];
+export const revalidate = 3;
+// false | 'force-cache' | 0 | number
+// false(기본값) : SSG로 동작하는 것을 볼 수 있다.
+// 0 : SSR처럼 요청이 올때마다 항상 만들어진다.
+// number : 몇초마다 ISR할 것인지
 
 export default async function ProductsPage() {
-    // 서버 파일 (데이터베이스)에 있는 제품의 리스트를 읽어와서 보여줌
     const products = await getProducts();
     return (
         <>

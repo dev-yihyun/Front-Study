@@ -1,6 +1,7 @@
 import { getProduct, getProducts } from "@/service/products";
 import { notFound } from "next/navigation";
 
+export const revalidate = 3;
 type Props = {
     params: {
         slug: string; //폴더명과 동일하기
