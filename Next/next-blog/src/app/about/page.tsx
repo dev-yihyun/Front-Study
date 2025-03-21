@@ -1,7 +1,9 @@
+import Profile from "@/components/Profile";
+
 function AboutPage() {
     return (
         <>
-            <h1>AboutPage</h1>
+            <Profile />
         </>
     );
 }
