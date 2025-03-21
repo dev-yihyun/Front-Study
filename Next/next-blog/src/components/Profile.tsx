@@ -17,7 +17,7 @@ function Profile() {
                 <p className="mt-5 font-bold text-xl">Frontend Developer</p>
                 <p className="mt-5">끊임없이 성장하기 위해 노력합니다.</p>
                 <Link href="/contact">
-                    <button className="mt-5 bg-yellow-100 py-2 px-5 font-bold rounded-xl">
+                    <button className="mt-5 bg-yellow-100 py-2 px-5 font-bold rounded-xl cursor-pointer">
                         Contact Me
                     </button>
                 </Link>
