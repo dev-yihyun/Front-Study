@@ -30,8 +30,11 @@ export async function getPostPath(prop: string): Promise<Data | undefined> {
     return post.find((data) => data.path === prop);
 }
 
-export async function getPostData(prop: string) {
-    const filePath = path.join(process.cwd(), "data", "posts", `${prop}.md`);
+export async function getPostData(fileName: string) {
+    const filePath = path.join(process.cwd(), "data", "posts", `${fileName}.md`);
     const content = await readFile(filePath, "utf-8");
-    return { content };
+
+    console.log("##contetnt", content);
+    console.log("##contetnt", typeof content);
+    return content;
 }
