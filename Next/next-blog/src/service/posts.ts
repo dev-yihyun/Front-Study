@@ -32,9 +32,14 @@ export async function getPostPath(prop: string): Promise<Data | undefined> {
 
 export async function getPostData(fileName: string) {
     const filePath = path.join(process.cwd(), "data", "posts", `${fileName}.md`);
+    const metadata = await getAllData().then((posts) =>
+        posts.find((post) => post.path === fileName)
+    );
+    if (!metadata) {
+        throw new Error(`${fileName}에 해당하는 포스트를 찾을 수 없음`);
+    }
     const content = await readFile(filePath, "utf-8");
 
-    console.log("##contetnt", content);
-    console.log("##contetnt", typeof content);
-    return content;
+    // console.log("## Content 확인:\n", content);
+    return { ...metadata, content };
 }

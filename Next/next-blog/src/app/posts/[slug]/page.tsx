@@ -1,44 +1,27 @@
-import { getPostData, getPostPath } from "@/service/posts";
+import MarkdownComponent from "@/components/MarkdownComponent";
+import { getPostData } from "@/service/posts";
 import Image from "next/image";
 import { SlCalender } from "react-icons/sl";
-import Markdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 
 type Props = {
-    params: Promise<{ slug: string }>; // 타입 수정: Promise로 받음
+    params: Promise<{ slug: string }>;
 };
 
 async function PostPage({ params }: Props) {
-    const { slug } = await params; // 비동기 처리로 await 적용
-    const data = await getPostPath(slug);
-    if (!data) {
+    const { slug } = await params;
+    const post = await getPostData(slug);
+
+    if (!post) {
         return (
             <>
                 <p>포스트를 찾을 수 없습니다.</p>
             </>
         );
     }
-    const { category, date, description, path, title } = data;
+    const { title, description, date, category, path, content } = post;
 
-    const content = await getPostData(path);
     console.log("###content", content);
-    // console.log("###content", typeof content);
-    //     const markdown = `A paragraph with *emphasis* and **strong importance**.
 
-    // > A block quote with ~strikethrough~ and a URL: https://reactjs.org.
-
-    // * Lists
-    // * [ ] todo
-    // * [x] done
-
-    // A table:
-
-    // | a | b |
-    // | - | - |
-
-    //  2023 Year Review!
-
-    // `;
     return (
         <>
             <div className="border border-gray-200">
@@ -67,8 +50,7 @@ async function PostPage({ params }: Props) {
                         </p>
                         {`# ${category}`}
                     </div>
-
-                    <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
+                    <MarkdownComponent content={content} />
                 </div>
             </div>
         </>
