@@ -29,7 +29,6 @@ function CarouselComponent({ children }: Props) {
             <Carousel infinite centerMode showDots responsive={responsive} itemClass="m-2">
                 {children}
             </Carousel>
-            ;
         </>
     );
 }
