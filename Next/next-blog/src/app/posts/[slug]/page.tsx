@@ -20,7 +20,7 @@ async function PostPage({ params }: Props) {
     }
     const { title, description, date, category, path, content } = post;
 
-    console.log("###content", content);
+    // console.log("###content", content);
 
     return (
         <>
