@@ -19,9 +19,6 @@ async function PostPage({ params }: Props) {
         );
     }
     const { title, description, date, category, path, content } = post;
-
-    // console.log("###content", content);
-
     return (
         <>
             <div className="border border-gray-200">

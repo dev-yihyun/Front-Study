@@ -13,7 +13,6 @@ async function Featuredposts() {
                     ))}
                 </div>
             </div>
-            {/*  */}
         </>
     );
 }

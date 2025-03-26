@@ -39,7 +39,5 @@ export async function getPostData(fileName: string) {
         throw new Error(`${fileName}에 해당하는 포스트를 찾을 수 없음`);
     }
     const content = await readFile(filePath, "utf-8");
-
-    // console.log("## Content 확인:\n", content);
     return { ...metadata, content };
 }

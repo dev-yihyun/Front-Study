@@ -6,12 +6,8 @@ import remarkGfm from "remark-gfm";
 function MarkdownComponent({ content }: { content: string }) {
     return (
         <>
-            {/* <div className="prose lg:prose-xl markdown-body"> */}
-            {/* <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown> */}
             <div className="prose lg:prose-xl markdown-body max-w-none">
                 <Markdown
-                    // className=" prose lg:prose-xl"
-
                     remarkPlugins={[remarkGfm]}
                     components={{
                         code(props) {
