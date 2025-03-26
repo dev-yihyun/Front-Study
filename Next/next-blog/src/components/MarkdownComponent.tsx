@@ -1,15 +1,15 @@
-// import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
-// import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
+import Image from "next/image";
 import Markdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 function MarkdownComponent({ content }: { content: string }) {
     return (
         <>
-            <div className="prose lg:prose-xl markdown-body">
-                <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown>
-            </div>
-            {/* <Markdown
-                className=" prose lg:prose-xl"
+            {/* <div className="prose lg:prose-xl markdown-body"> */}
+            {/* <Markdown remarkPlugins={[remarkGfm]}>{content}</Markdown> */}
+            <Markdown
+                // className=" prose lg:prose-xl"
                 remarkPlugins={[remarkGfm]}
                 components={{
                     code(props) {
@@ -45,7 +45,7 @@ function MarkdownComponent({ content }: { content: string }) {
                 }}
             >
                 {content}
-            </Markdown> */}
+            </Markdown>
         </>
     );
 }
