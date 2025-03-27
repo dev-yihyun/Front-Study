@@ -1,5 +1,11 @@
 import FilterPost from "@/components/FilterPost";
 import { getAllData } from "@/service/posts";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "All Posts",
+    description: "블로그 글",
+};
 
 async function PostsPage() {
     const data = await getAllData();

@@ -1,5 +1,10 @@
 import Profile from "@/components/Profile";
+import { Metadata } from "next";
 import profileData from "../../../data/profileData.json";
+export const metadata: Metadata = {
+    title: "About Me",
+    description: "나의 Career",
+};
 
 function AboutPage() {
     return (

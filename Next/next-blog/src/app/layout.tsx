@@ -15,8 +15,14 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "내가 만든 next blog",
+    title: {
+        default: "next로 만드는 나의 blog",
+        template: "next로 만드는 blog | %s",
+    },
     description: "next.js로 만든 blog 입니다.",
+    icons: {
+        icon: "/favicon.icon",
+    },
 };
 
 export default function RootLayout({

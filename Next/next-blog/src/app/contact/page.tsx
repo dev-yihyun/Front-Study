@@ -1,7 +1,13 @@
 import EmailForm from "@/components/EmailForm";
+import { Metadata } from "next";
 import Link from "next/link";
 import { FaBlogger, FaGithub } from "react-icons/fa";
 import profileData from "../../../data/profileData.json";
+export const metadata: Metadata = {
+    title: "Contact Me",
+    description: "나에게 메일 보내기기",
+};
+
 function ContactPage() {
     return (
         <>

@@ -7,6 +7,15 @@ type Props = {
     params: Promise<{ slug: string }>;
 };
 
+export async function generateMetadata({ params }: Props) {
+    const { slug } = await params;
+    const { title, description } = await getPostData(slug);
+    return {
+        title,
+        description,
+    };
+}
+
 async function PostPage({ params }: Props) {
     const { slug } = await params;
     const post = await getPostData(slug);
