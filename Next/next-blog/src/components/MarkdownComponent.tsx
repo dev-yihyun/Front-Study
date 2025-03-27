@@ -1,9 +1,12 @@
+"use client";
 import Image from "next/image";
+import { useRef } from "react";
 import Markdown from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { okaidia } from "react-syntax-highlighter/dist/esm/styles/prism";
 import remarkGfm from "remark-gfm";
 function MarkdownComponent({ content }: { content: string }) {
+    const ref = useRef<SyntaxHighlighter>(null);
     return (
         <>
             <div className="prose lg:prose-xl markdown-body max-w-none">
@@ -18,6 +21,7 @@ function MarkdownComponent({ content }: { content: string }) {
                                     {...rest}
                                     PreTag="div"
                                     children={String(children).replace(/\n$/, "")}
+                                    ref={ref}
                                     language={match[1]}
                                     style={okaidia}
                                 />
