@@ -48,6 +48,10 @@ function EmailForm() {
             });
     };
 
+    const onCancel = () => {
+        setForm(DEFAULT_DATA);
+    };
+
     return (
         <>
             <div className="w-full max-w-md mt-10">
@@ -88,7 +92,11 @@ function EmailForm() {
                         onChange={onChange}
                     />
                     <div className="flex flex-row gap-2 mt-5 items-center self-end">
-                        <button type="button" className="text-sm/6 font-semibold text-gray-900">
+                        <button
+                            type="button"
+                            className="text-sm/6 font-semibold text-gray-900"
+                            onClick={onCancel}
+                        >
                             Cancel
                         </button>
                         <button
