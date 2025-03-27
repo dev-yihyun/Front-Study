@@ -36,6 +36,7 @@ function EmailForm() {
                 setForm(DEFAULT_DATA);
             })
             .catch((error) => {
+                console.error(error);
                 setBanner({
                     message: "메일전송에 실패했습니다. 다시 시도해 주세요",
                     state: "error",

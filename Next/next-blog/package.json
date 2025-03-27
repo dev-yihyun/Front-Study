@@ -9,6 +9,7 @@
         "lint": "next lint"
     },
     "dependencies": {
+        "@types/nodemailer": "^6.4.17",
         "@types/react-syntax-highlighter": "^15.5.13",
         "next": "15.2.3",
         "nodemailer": "^6.10.0",

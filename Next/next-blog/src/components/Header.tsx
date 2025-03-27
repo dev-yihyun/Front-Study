@@ -5,7 +5,7 @@ function Header() {
         <>
             <header className="flex justify-between my-8 items-center text-black">
                 <h1 className="font-bold text-2xl ">
-                    <Link href="/">Dev's Blog</Link>
+                    <Link href="/">Dev Blog</Link>
                 </h1>
                 <nav className="flex text-base ">
                     <Link href="/" className="ml-8 mr-4">

@@ -14,17 +14,18 @@ function MarkdownComponent({ content }: { content: string }) {
                     remarkPlugins={[remarkGfm]}
                     components={{
                         code(props) {
-                            const { children, className, node, ...rest } = props;
+                            const { children, className, ...rest } = props;
                             const match = /language-(\w+)/.exec(className || "");
                             return match ? (
                                 <SyntaxHighlighter
                                     {...rest}
                                     PreTag="div"
-                                    children={String(children).replace(/\n$/, "")}
                                     ref={ref}
                                     language={match[1]}
                                     style={okaidia}
-                                />
+                                >
+                                    {String(children).replace(/\n$/, "")}
+                                </SyntaxHighlighter>
                             ) : (
                                 <code {...rest} className={className}>
                                     {children}
