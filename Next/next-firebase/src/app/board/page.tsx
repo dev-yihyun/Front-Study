@@ -54,9 +54,9 @@ export default function Page() {
             const result = await response.json();
             console.log("추가된 데이터:", result);
 
-            // // 다시 데이터 불러오기
-            // const newData = await fetch("/api/board").then((res) => res.json());
-            // setBoardData(newData.data);
+            // 다시 데이터 불러오기
+            const newData = await fetch("/api/board").then((res) => res.json());
+            setBoardData(newData.data);
         } catch (error) {
             console.error("추가 중 오류 발생:", error);
         }
