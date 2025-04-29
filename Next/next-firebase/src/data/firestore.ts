@@ -1,6 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { collection, getDocs, getFirestore, Timestamp } from "firebase/firestore";
-
+import { collection, doc, getDocs, getFirestore, setDoc, Timestamp } from "firebase/firestore";
 type BoardItem = {
     id: string;
     title: string;
@@ -53,3 +52,20 @@ export async function fetchData() {
   ]
 }
 */
+
+// import { doc, setDoc } from "firebase/firestore";
+type AddItem = {
+    title: string;
+    content: string;
+};
+export async function addItem({ title, content }: AddItem) {
+    const newItemRef = doc(collection(db, "board"));
+    const createAtTimeStamp = Timestamp.fromDate(new Date());
+    const newItem = {
+        id: newItemRef.id,
+        title: title,
+        content: content,
+        createAt: createAtTimeStamp,
+    };
+    await setDoc(newItemRef, newItem);
+}
