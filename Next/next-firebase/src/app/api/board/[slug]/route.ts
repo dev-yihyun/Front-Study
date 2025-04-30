@@ -1,4 +1,4 @@
-import { deleteData, fetchSinglelData } from "@/data/firestore";
+import { deleteData, editData, fetchSinglelData } from "@/data/firestore";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
@@ -24,5 +24,19 @@ export async function DELETE(request: NextRequest, { params }: { params: { slug:
         return new Response(null, { status: 204 });
     }
     const response = { message: "데이터 단일 삭제 성공", deleteData };
+    return NextResponse.json(response, { status: 200 });
+}
+
+export async function POST(request: NextRequest, { params }: { params: { slug: string } }) {
+    const { title, content } = await request.json();
+
+    const editedData = await editData(params.slug, { title, content });
+    if (editedData === null) {
+        return new Response(null, { status: 204 });
+    }
+    const response = {
+        message: "데이터 수정 성공",
+        data: editedData,
+    };
     return NextResponse.json(response, { status: 200 });
 }

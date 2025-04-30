@@ -8,6 +8,7 @@ import {
     getFirestore,
     setDoc,
     Timestamp,
+    updateDoc,
 } from "firebase/firestore";
 type BoardItem = {
     id: string;
@@ -118,4 +119,26 @@ export async function deleteData(id: string) {
 
     await deleteDoc(doc(db, "board", id));
     return fetchedData;
+}
+
+// 단일 데이터 수정
+// import { doc, updateDoc} from "firebase/firestore";
+export async function editData(id: string, { title, content }: { title: string; content: string }) {
+    const fetchedData = await fetchSinglelData(id);
+
+    if (fetchedData === null) {
+        return null;
+    }
+    const findDataRef = doc(db, "board", id);
+    const updatedData = await updateDoc(findDataRef, {
+        title: title,
+        content: content,
+    });
+    return updatedData;
+    // await updateDoc(findDataRef, {
+    //     title: title,
+    //     content: content,
+    // });
+
+    // return { id: id, title: title, content: content, createAt: fetchedData.createAt };
 }

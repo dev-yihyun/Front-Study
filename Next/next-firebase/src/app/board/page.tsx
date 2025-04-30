@@ -33,9 +33,8 @@ export default function Page() {
 
     const onAddData = async () => {
         const sampleData = {
-            id: 2,
-            title: "버튼 테스트3",
-            content: "이것은 단일 데이터 조회하기 콘텐츠입니다",
+            title: "내용 추가 후 수정할 예정입니다.",
+            content: "이것은 수정 될 콘텐츠입니다",
         };
         try {
             const response = await fetch("/api/board", {
@@ -74,7 +73,31 @@ export default function Page() {
             console.error("삭제 중 오류 발생:", error);
         }
     };
+    const onEditData = async (id: string) => {
+        const updatedData = {
+            title: "수정된 제목입니다",
+            content: "이것은 수정된 콘텐츠입니다",
+        };
 
+        try {
+            const response = await fetch(`/api/board/${id}`, {
+                method: "POST", // or PUT if you've set it up that way
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(updatedData),
+            });
+
+            if (!response.ok) {
+                throw new Error("수정 요청 실패");
+            }
+
+            const refreshed = await fetch("/api/board").then((res) => res.json());
+            setBoardData(refreshed.data);
+        } catch (error) {
+            console.error("수정 중 오류 발생:", error);
+        }
+    };
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">게시판 데이터</h1>
@@ -90,6 +113,12 @@ export default function Page() {
                             className="text-red-600 mt-2 underline"
                         >
                             삭제
+                        </button>
+                        <button
+                            onClick={() => onEditData(item.id)}
+                            className="text-blue-600 underline mr-2"
+                        >
+                            수정
                         </button>
                     </li>
                 ))}
