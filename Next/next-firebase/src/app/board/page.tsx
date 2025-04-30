@@ -33,10 +33,10 @@ export default function Page() {
     }
 
     const onAddData = async () => {
-        console.log("onAddData");
         const sampleData = {
-            title: "샘플 제목입니다",
-            content: "이것은 샘플 콘텐츠입니다",
+            id: 2,
+            title: "버튼 테스트3",
+            content: "이것은 단일 데이터 조회하기 콘텐츠입니다",
         };
         try {
             const response = await fetch("/api/board", {
