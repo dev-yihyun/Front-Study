@@ -12,19 +12,18 @@ type BoardItem = {
 export default function Page() {
     const [boardData, setBoardData] = useState<BoardItem[]>([]);
     const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        async function fetchBoard() {
-            try {
-                const response = await fetch("/api/board");
-                const result = await response.json();
-                setBoardData(result.data);
-            } catch (error) {
-                console.error("데이터 불러오기 실패", error);
-            } finally {
-                setLoading(false);
-            }
+    const fetchBoard = async () => {
+        try {
+            const response = await fetch("/api/board");
+            const result = await response.json();
+            setBoardData(result.data);
+        } catch (error) {
+            console.error("데이터 불러오기 실패", error);
+        } finally {
+            setLoading(false);
         }
+    };
+    useEffect(() => {
         fetchBoard();
     }, []);
 
@@ -62,6 +61,20 @@ export default function Page() {
         }
     };
 
+    const onDeleteData = async (id: string) => {
+        try {
+            const response = await fetch(`/api/board/${id}`, {
+                method: "DELETE",
+            });
+
+            if (!response.ok) throw new Error("삭제 실패");
+
+            await fetchBoard();
+        } catch (error) {
+            console.error("삭제 중 오류 발생:", error);
+        }
+    };
+
     return (
         <div className="p-4">
             <h1 className="text-2xl font-bold mb-4">게시판 데이터</h1>
@@ -71,6 +84,13 @@ export default function Page() {
                         <h2 className="text-xl">{item.title}</h2>
                         <p>{item.content}</p>
                         <small>{item.createAt.toLocaleString()}</small>
+                        <br />
+                        <button
+                            onClick={() => onDeleteData(item.id)}
+                            className="text-red-600 mt-2 underline"
+                        >
+                            삭제
+                        </button>
                     </li>
                 ))}
             </ul>

@@ -1,6 +1,7 @@
 import { initializeApp } from "firebase/app";
 import {
     collection,
+    deleteDoc,
     doc,
     getDoc,
     getDocs,
@@ -103,4 +104,18 @@ export async function fetchSinglelData(id: string) {
         console.log("No Such Document!");
         return null;
     }
+}
+
+// 단일 데이터 삭제
+// import { doc, deleteDoc} from "firebase/firestore";
+
+export async function deleteData(id: string) {
+    const fetchedData = await fetchSinglelData(id);
+
+    if (fetchedData === null) {
+        return null;
+    }
+
+    await deleteDoc(doc(db, "board", id));
+    return fetchedData;
 }
