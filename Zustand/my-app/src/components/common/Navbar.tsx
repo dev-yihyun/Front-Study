@@ -74,7 +74,7 @@ async function Navbar({ children }: NavbarProps) {
                 </SidebarFooter>
             </Sidebar>
             <div className="flex flex-1 flex-col">
-                <header className="flex h-16 shrink-0 items-center gap-2 bg-header text-header-foreground border-b border-header-border">
+                <header className="sticky top-0 z-50 flex h-16 shrink-0 items-center gap-2 bg-header text-header-foreground border-b border-header-border backdrop-blur supports-[backdrop-filter]:bg-header/80">
                     <div className="flex items-center gap-2 px-4">
                         <SidebarTrigger className="-ml-1" />
                         <Separator
