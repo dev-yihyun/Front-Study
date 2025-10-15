@@ -1,9 +1,9 @@
 import "../globals.css";
 
-export default async function TodoLayout({
+export default async function SignupLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return <main>{children}</main>;
+    return <section>{children}</section>;
 }
