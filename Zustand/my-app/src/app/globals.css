@@ -121,14 +121,6 @@
     --header-border: hsl(240 3.7% 15.9%);
 }
 
-/* @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
-} */
 @layer base {
     :root {
         --sidebar: oklch(0.985 0 0);
@@ -169,5 +161,10 @@
         --header: 240 5.9% 10%;
         --header-foreground: 240 4.8% 95.9%;
         --header-border: 240 3.7% 15.9%;
+    }
+
+    button:not(:disabled),
+    [role="button"]:not(:disabled) {
+        cursor: pointer;
     }
 }
