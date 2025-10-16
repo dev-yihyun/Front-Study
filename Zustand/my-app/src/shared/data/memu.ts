@@ -19,8 +19,8 @@ export const menuItems = [
     },
 ];
 export const titleMap: Record<string, string> = {
-    "/": "홈",
-    "/login": "로그인",
-    "/signup": "회원가입",
-    "/todo": "할 일 목록",
+    "/": "Home",
+    "/login": "Login",
+    "/signup": "Signup",
+    "/todo": "Todo",
 };
