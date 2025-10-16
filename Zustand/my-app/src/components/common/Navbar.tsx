@@ -1,7 +1,14 @@
 import { menuItems } from "@/shared/data/memu";
-import { Command } from "lucide-react";
+import { ChevronUp, Command, LogOut } from "lucide-react";
 import { cookies } from "next/headers";
 import React from "react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 import { Separator } from "../ui/separator";
 import {
     Sidebar,
@@ -68,6 +75,44 @@ async function Navbar({ children }: NavbarProps) {
                     </SidebarGroup>
                 </SidebarContent>
                 <SidebarFooter>
+                    <Separator decorative />
+                    <SidebarMenu>
+                        <SidebarMenuItem>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <SidebarMenuButton size="lg">
+                                        <Avatar>
+                                            <AvatarImage
+                                                src="https://github.com/shadcn.png"
+                                                alt="@shadcn"
+                                            />
+                                            <AvatarFallback>CN</AvatarFallback>
+                                        </Avatar>
+                                        <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
+                                            <div className="grid flex-1 text-left text-sm leading-tight">
+                                                <span className="truncate font-medium">
+                                                    username
+                                                </span>
+                                                <span className="truncate text-xs">useremail</span>
+                                            </div>
+                                        </div>
+                                        <ChevronUp className="ml-auto" />
+                                    </SidebarMenuButton>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent
+                                    side="top"
+                                    className="w-[--radix-popper-anchor-width]"
+                                >
+                                    <DropdownMenuItem>
+                                        <LogOut />
+                                        Log out
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        </SidebarMenuItem>
+                    </SidebarMenu>
+
+                    <Separator decorative />
                     <div className="p-2 text-xs text-muted-foreground">
                         © 2024 Acme Inc. All rights reserved.
                     </div>
