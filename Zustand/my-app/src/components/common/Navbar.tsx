@@ -1,6 +1,8 @@
+"use client";
+
 import { menuItems } from "@/shared/data/memu";
+import userStore from "@/shared/store/user";
 import { ChevronUp, Command, LogOut } from "lucide-react";
-import { cookies } from "next/headers";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -28,11 +30,11 @@ import PageTitle from "./PageTitle";
 
 type NavbarProps = {
     children: React.ReactNode;
+    defaultOpen: boolean;
 };
 
-async function Navbar({ children }: NavbarProps) {
-    const cookieStore = await cookies();
-    const defaultOpen = cookieStore.get("sidebar_state")?.value === "true";
+function Navbar({ children, defaultOpen }: NavbarProps) {
+    const userdata = userStore();
 
     return (
         <SidebarProvider defaultOpen={defaultOpen}>
@@ -91,9 +93,11 @@ async function Navbar({ children }: NavbarProps) {
                                         <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
                                             <div className="grid flex-1 text-left text-sm leading-tight">
                                                 <span className="truncate font-medium">
-                                                    username
+                                                    {userdata.user?.username || "username"}
                                                 </span>
-                                                <span className="truncate text-xs">useremail</span>
+                                                <span className="truncate text-xs">
+                                                    {userdata.user?.useremail || "useremail"}
+                                                </span>
                                             </div>
                                         </div>
                                         <ChevronUp className="ml-auto" />
