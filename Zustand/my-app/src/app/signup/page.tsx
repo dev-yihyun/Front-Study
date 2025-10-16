@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import userStore from "@/shared/store/user";
+import { UserType } from "@/shared/types/user";
 import React from "react";
 import { useForm } from "react-hook-form";
 
@@ -21,6 +23,8 @@ function SignupPage() {
         watch,
         formState: { isSubmitted, isSubmitting, errors, isValid },
     } = useForm<UserDataType>();
+
+    const { setUser } = userStore();
     return (
         <div className="flex min-h-svh w-full items-center justify-center md:p-10">
             <div className="w-full max-w-sm">
@@ -37,8 +41,19 @@ function SignupPage() {
                             onSubmit={handleSubmit(async (data) => {
                                 // 비동기 처리 시뮬레이션 (2초)
                                 await new Promise((resolve) => setTimeout(resolve, 2000));
+
+                                // Zustand 스토어에 사용자 정보 저장
+                                const userData: UserType = {
+                                    username: data.name,
+                                    useremail: data.email,
+                                    userpassword: data.password,
+                                };
+
+                                setUser(userData);
+
                                 console.log("##data : ", data);
                                 console.log("##data : ", JSON.stringify(data));
+                                console.log("##사용자 정보가 Zustand 스토어에 저장되었습니다.");
                             })}
                         >
                             <FieldGroup>
