@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     Field,
     FieldDescription,
@@ -10,6 +11,7 @@ import {
     FieldSeparator,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import React from "react";
 import { useForm } from "react-hook-form";
 import AppleIcon from "./_ui/_icon/AppleIcon";
@@ -58,6 +60,12 @@ function LoginPage() {
                                         required
                                         {...register("password")}
                                     />
+                                </Field>
+                                <Field>
+                                    <div className="flex items-center gap-3">
+                                        <Checkbox id="login-keep" />
+                                        <Label htmlFor="login-keep"> Stay Signed in</Label>
+                                    </div>
                                 </Field>
                                 <Field>
                                     <Button type="submit">Login</Button>
