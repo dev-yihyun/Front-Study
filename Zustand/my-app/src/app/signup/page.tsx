@@ -5,10 +5,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { UserType } from "@/shared/types/user";
-import axios from "axios";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
+import { checkEmailExists, registerUser } from "./_api/api";
 
 type UserDataType = {
     name: string;
@@ -52,15 +52,13 @@ function SignupPage() {
                                     };
 
                                     // 같은 메일이 있는지 확인
-                                    const checkEmail = await axios.get(
-                                        `http://localhost:3001/users?useremail=${data.email}`
-                                    );
-                                    if (checkEmail.data.length > 0) {
+                                    const checkEmail = await checkEmailExists(data.email);
+                                    if (checkEmail) {
                                         alert("이미 가입된 이메일 입니다.");
                                         return;
                                     } else {
                                         // 새 유저 등록
-                                        await axios.post("http://localhost:3001/users", userData);
+                                        await registerUser(userData);
 
                                         alert(
                                             "회원가입이 완료되었습니다! 로그인 페이지로 이동합니다."
