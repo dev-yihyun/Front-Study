@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import userStore from "@/shared/store/user";
 import { UserType } from "@/shared/types/user";
 import React from "react";
 import { useForm } from "react-hook-form";
@@ -24,7 +23,6 @@ function SignupPage() {
         formState: { isSubmitted, isSubmitting, errors, isValid },
     } = useForm<UserDataType>();
 
-    const { setUser } = userStore();
     return (
         <div className="flex min-h-svh w-full items-center justify-center md:p-10">
             <div className="w-full max-w-sm">
@@ -49,7 +47,7 @@ function SignupPage() {
                                     userpassword: data.password,
                                 };
 
-                                setUser(userData);
+                                // setUser(userData);
 
                                 console.log("##data : ", data);
                                 console.log("##data : ", JSON.stringify(data));

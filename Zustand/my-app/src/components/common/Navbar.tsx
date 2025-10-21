@@ -1,7 +1,7 @@
 "use client";
 
-import { menuItems } from "@/shared/data/memu";
-import userStore from "@/shared/store/user";
+import { appMenuItems, authMenuItems } from "@/shared/data/memu";
+// import userStore from "@/shared/store/user";
 import { ChevronUp, Command, LogOut } from "lucide-react";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -34,7 +34,7 @@ type NavbarProps = {
 };
 
 function Navbar({ children, defaultOpen }: NavbarProps) {
-    const userdata = userStore();
+    // const userdata = userStore();
 
     return (
         <SidebarProvider defaultOpen={defaultOpen}>
@@ -59,10 +59,27 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                 <Separator orientation="horizontal" />
                 <SidebarContent>
                     <SidebarGroup>
+                        <SidebarGroupLabel>Auth</SidebarGroupLabel>
+                        <SidebarGroupContent>
+                            <SidebarMenu>
+                                {authMenuItems.map((item) => (
+                                    <SidebarMenuItem key={item.title}>
+                                        <SidebarMenuButton asChild>
+                                            <a href={item.url}>
+                                                <item.icon />
+                                                <span>{item.title}</span>
+                                            </a>
+                                        </SidebarMenuButton>
+                                    </SidebarMenuItem>
+                                ))}
+                            </SidebarMenu>
+                        </SidebarGroupContent>
+                    </SidebarGroup>
+                    <SidebarGroup>
                         <SidebarGroupLabel>Application</SidebarGroupLabel>
                         <SidebarGroupContent>
                             <SidebarMenu>
-                                {menuItems.map((item) => (
+                                {appMenuItems.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild>
                                             <a href={item.url}>
@@ -83,6 +100,8 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
                                     <SidebarMenuButton size="lg">
+                                        {/* 로그인 하지 않을 경우 이미지 */}
+                                        {/* 로그인 한 경우 이미지 */}
                                         <Avatar>
                                             <AvatarImage
                                                 src="https://github.com/shadcn.png"
@@ -93,10 +112,12 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                                         <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
                                             <div className="grid flex-1 text-left text-sm leading-tight">
                                                 <span className="truncate font-medium">
-                                                    {userdata.user?.username || "username"}
+                                                    {/* {userdata.user?.username || "username"} */}
+                                                    Guest
                                                 </span>
                                                 <span className="truncate text-xs">
-                                                    {userdata.user?.useremail || "useremail"}
+                                                    {/* {userdata.user?.useremail || "useremail"} */}
+                                                    GuestEmail
                                                 </span>
                                             </div>
                                         </div>

@@ -1,8 +1,13 @@
+"use client";
 import ReadyComponent from "@/components/common/Ready";
-export default async function HomePage() {
+import React from "react";
+
+function FindAccountPage() {
     return (
         <section>
             <ReadyComponent />
         </section>
     );
 }
+
+export default React.memo(FindAccountPage);
