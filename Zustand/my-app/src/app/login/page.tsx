@@ -1,25 +1,12 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
-import {
-    Field,
-    FieldDescription,
-    FieldGroup,
-    FieldLabel,
-    FieldSeparator,
-} from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldDescription, FieldSeparator } from "@/components/ui/field";
 import React from "react";
-import { useForm } from "react-hook-form";
-import AppleIcon from "./_ui/_icon/AppleIcon";
-import GoogleIcon from "./_ui/_icon/GoogleIcon";
-import MetaIcon from "./_ui/_icon/MetaIcon";
+import EmailLogin from "./_ui/component/EmailLogin";
+import SocialLogin from "./_ui/component/SocialLogin";
 
 function LoginPage() {
-    const { register, handleSubmit } = useForm();
     return (
         <div className="flex min-h-svh w-full items-center justify-center md:p-10">
             <div className="w-full max-w-sm">
@@ -28,77 +15,16 @@ function LoginPage() {
                         <CardTitle className="text-xl">Welcome back</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <form
-                            onSubmit={handleSubmit(() => {
-                                console.log("클릭");
-                            })}
-                        >
-                            <FieldGroup>
-                                <Field>
-                                    <FieldLabel htmlFor="email">Email</FieldLabel>
-                                    <Input
-                                        id="email"
-                                        type="email"
-                                        placeholder="m@example.com"
-                                        required
-                                        {...register("email")}
-                                    />
-                                </Field>
-                                <Field>
-                                    <div className="flex items-center">
-                                        <FieldLabel htmlFor="password">Password</FieldLabel>
-                                        <a
-                                            href="/find-account"
-                                            className="ml-auto text-sm underline-offset-4 hover:underline text-blue-500"
-                                        >
-                                            Forgot your password?
-                                        </a>
-                                    </div>
-                                    <Input
-                                        id="password"
-                                        type="password"
-                                        required
-                                        {...register("password")}
-                                    />
-                                </Field>
-                                <Field>
-                                    <div className="flex items-center gap-3">
-                                        <Checkbox id="login-keep" />
-                                        <Label htmlFor="login-keep"> Stay Signed in</Label>
-                                    </div>
-                                </Field>
-                                <Field>
-                                    <Button type="submit">Login</Button>
-                                </Field>
-
-                                <FieldSeparator> Or continue with</FieldSeparator>
-
-                                <Field className="grid grid-cols-3 gap-4">
-                                    <Button variant="outline" type="button">
-                                        <AppleIcon />
-                                        <span className="sr-only">Login with Apple</span>
-                                    </Button>
-                                    <Button variant="outline" type="button">
-                                        <GoogleIcon />
-                                        <span className="sr-only">Login with Google</span>
-                                    </Button>
-                                    <Button variant="outline" type="button">
-                                        <MetaIcon />
-                                        <span className="sr-only">Login with Meta</span>
-                                    </Button>
-                                </Field>
-
-                                <FieldDescription className="text-center">
-                                    Don&apos;t have an account?{" "}
-                                    <a href="/signup" className="text-blue-500">
-                                        Sign up
-                                    </a>
-                                </FieldDescription>
-                            </FieldGroup>
-                        </form>
+                        <EmailLogin />
+                        <FieldSeparator className="mt-7">Or continue with</FieldSeparator>
+                        <SocialLogin />{" "}
+                        <FieldDescription className="text-center">
+                            Don&apos;t have an account?{" "}
+                            <a href="/signup" className="text-blue-500">
+                                Sign up
+                            </a>
+                        </FieldDescription>
                     </CardContent>
-
-                    <CardContent></CardContent>
                 </Card>
             </div>
         </div>
