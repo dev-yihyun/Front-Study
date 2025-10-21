@@ -1,7 +1,7 @@
-import { Home, LogIn, UserPlus, UserSearch } from "lucide-react";
+import { Home, LayoutDashboard, LogIn, UserPlus, UserSearch } from "lucide-react";
 
 // Menu items.
-export const menuItems = [
+export const authMenuItems = [
     {
         title: "Home",
         url: "/",
@@ -23,10 +23,19 @@ export const menuItems = [
         icon: UserSearch,
     },
 ];
+export const appMenuItems = [
+    {
+        title: "DashBoard",
+        url: "/dashboard",
+        icon: LayoutDashboard,
+    },
+];
+
 export const titleMap: Record<string, string> = {
     "/": "Home",
     "/login": "Login",
     "/signup": "Signup",
     "/find-account": "Find Account",
     "/todo": "Todo",
+    "/dashboard": "DashBoard",
 };
