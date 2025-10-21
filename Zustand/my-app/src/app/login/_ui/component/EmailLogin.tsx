@@ -34,7 +34,7 @@ function EmailLoginForm({ onLoginSuccess }: EmailLoginFormProps) {
             alert(`로그인 성공! 환영합니다, ${user.username}`);
             onLoginSuccess?.(user); // 로그인 성공 시 콜백 호출
 
-            router.push("/");
+            router.push("/dashboard");
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : "로그인 실패";
             alert(msg);
