@@ -21,7 +21,9 @@ function SignupPage() {
         handleSubmit,
         watch,
         formState: { isSubmitted, isSubmitting, errors, isValid },
-    } = useForm<UserDataType>();
+    } = useForm<UserDataType>({
+        mode: "onChange",
+    });
 
     return (
         <div className="flex min-h-svh w-full items-center justify-center md:p-10">
@@ -51,7 +53,6 @@ function SignupPage() {
 
                                 console.log("##data : ", data);
                                 console.log("##data : ", JSON.stringify(data));
-                                console.log("##사용자 정보가 Zustand 스토어에 저장되었습니다.");
                             })}
                         >
                             <FieldGroup>
