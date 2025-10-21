@@ -5,7 +5,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { UserType } from "@/shared/types/user";
-import React from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 
 type UserDataType = {
@@ -16,6 +18,8 @@ type UserDataType = {
 };
 
 function SignupPage() {
+    const router = useRouter();
+    const [isRegistered, setIsRegistered] = useState<boolean>(false); // ✅ 회원가입 완료 여부
     const {
         register,
         handleSubmit,
@@ -39,20 +43,35 @@ function SignupPage() {
                         <form
                             noValidate
                             onSubmit={handleSubmit(async (data) => {
-                                // 비동기 처리 시뮬레이션 (2초)
-                                await new Promise((resolve) => setTimeout(resolve, 2000));
+                                try {
+                                    // 서버로 전송할 사용자 데이터 정의
+                                    const userData: UserType = {
+                                        username: data.name,
+                                        useremail: data.email,
+                                        userpassword: data.password,
+                                    };
 
-                                // Zustand 스토어에 사용자 정보 저장
-                                const userData: UserType = {
-                                    username: data.name,
-                                    useremail: data.email,
-                                    userpassword: data.password,
-                                };
+                                    // 같은 메일이 있는지 확인
+                                    const checkEmail = await axios.get(
+                                        `http://localhost:3001/users?useremail=${data.email}`
+                                    );
+                                    if (checkEmail.data.length > 0) {
+                                        alert("이미 가입된 이메일 입니다.");
+                                        return;
+                                    } else {
+                                        // 새 유저 등록
+                                        await axios.post("http://localhost:3001/users", userData);
 
-                                // setUser(userData);
-
-                                console.log("##data : ", data);
-                                console.log("##data : ", JSON.stringify(data));
+                                        alert(
+                                            "회원가입이 완료되었습니다! 로그인 페이지로 이동합니다."
+                                        );
+                                        router.push("/login");
+                                        setIsRegistered(true);
+                                    }
+                                } catch (error: unknown) {
+                                    console.error("signup fail:", error);
+                                    alert("회원가입 중 오류가 발생했습니다.");
+                                }
                             })}
                         >
                             <FieldGroup>
@@ -185,7 +204,10 @@ function SignupPage() {
                                 </Field>
                                 <FieldGroup>
                                     <Field>
-                                        <Button type="submit" disabled={!isValid || isSubmitting}>
+                                        <Button
+                                            type="submit"
+                                            disabled={!isValid || isSubmitting || isRegistered}
+                                        >
                                             {isSubmitting ? "Processing..." : "Create Account"}
                                         </Button>
                                         <FieldDescription className="px-6 text-center">
