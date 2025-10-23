@@ -2,7 +2,7 @@
 import { UserType } from "@/shared/types/user";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3001"; // ⚙️ 환경에 맞게 조정 가능
+const BASE_URL = "http://localhost:3002"; // ⚙️ 환경에 맞게 조정 가능
 
 // 이메일 중복 확인
 export const checkEmailExists = async (email: string): Promise<boolean> => {
