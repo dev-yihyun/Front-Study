@@ -34,8 +34,6 @@ type NavbarProps = {
 };
 
 function Navbar({ children, defaultOpen }: NavbarProps) {
-    // const userdata = userStore();
-
     return (
         <SidebarProvider defaultOpen={defaultOpen}>
             <Sidebar collapsible="icon">
