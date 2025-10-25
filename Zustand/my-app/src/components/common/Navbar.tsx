@@ -1,7 +1,9 @@
 "use client";
 
 import { appMenuItems, authMenuItems } from "@/shared/data/memu";
+import { useAuth } from "@/shared/hooks/useAuth";
 import { ChevronUp, Command } from "lucide-react";
+import Link from "next/link";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -27,6 +29,7 @@ import {
 } from "../ui/sidebar";
 import LogoutButton from "./LogoutButton";
 import PageTitle from "./PageTitle";
+import SignupButton from "./SignupButton";
 
 type NavbarProps = {
     children: React.ReactNode;
@@ -34,6 +37,7 @@ type NavbarProps = {
 };
 
 function Navbar({ children, defaultOpen }: NavbarProps) {
+    const { user, isAuthenticated } = useAuth();
     return (
         <SidebarProvider defaultOpen={defaultOpen}>
             <Sidebar collapsible="icon">
@@ -41,7 +45,7 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                     <SidebarMenu>
                         <SidebarMenuItem>
                             <SidebarMenuButton size="lg" asChild>
-                                <a href="#">
+                                <Link href="/">
                                     <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
                                         <Command className="size-4" />
                                     </div>
@@ -49,7 +53,7 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                                         <span className="truncate font-medium">Acme Inc</span>
                                         <span className="truncate text-xs">Enterprise</span>
                                     </div>
-                                </a>
+                                </Link>
                             </SidebarMenuButton>
                         </SidebarMenuItem>
                     </SidebarMenu>
@@ -63,10 +67,10 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                                 {authMenuItems.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild>
-                                            <a href={item.url}>
+                                            <Link href={item.url}>
                                                 <item.icon />
                                                 <span>{item.title}</span>
-                                            </a>
+                                            </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
@@ -80,10 +84,10 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                                 {appMenuItems.map((item) => (
                                     <SidebarMenuItem key={item.title}>
                                         <SidebarMenuButton asChild>
-                                            <a href={item.url}>
+                                            <Link href={item.url}>
                                                 <item.icon />
                                                 <span>{item.title}</span>
-                                            </a>
+                                            </Link>
                                         </SidebarMenuButton>
                                     </SidebarMenuItem>
                                 ))}
@@ -102,20 +106,22 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                                         {/* 로그인 한 경우 이미지 */}
                                         <Avatar>
                                             <AvatarImage
-                                                src="https://github.com/shadcn.png"
-                                                alt="@shadcn"
+                                                src={
+                                                    user?.useremail
+                                                        ? "https://github.com/shadcn.png"
+                                                        : undefined
+                                                }
+                                                alt={user?.username || "Guest"}
                                             />
                                             <AvatarFallback>CN</AvatarFallback>
                                         </Avatar>
                                         <div className="*:data-[slot=avatar]:ring-background flex -space-x-2 *:data-[slot=avatar]:ring-2 *:data-[slot=avatar]:grayscale">
                                             <div className="grid flex-1 text-left text-sm leading-tight">
                                                 <span className="truncate font-medium">
-                                                    {/* {userdata.user?.username || "username"} */}
-                                                    Guest
+                                                    {user?.username || "Guest"}
                                                 </span>
                                                 <span className="truncate text-xs">
-                                                    {/* {userdata.user?.useremail || "useremail"} */}
-                                                    GuestEmail
+                                                    {user?.useremail || "GuestEmail"}
                                                 </span>
                                             </div>
                                         </div>
@@ -127,9 +133,7 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                                     className="w-[--radix-popper-anchor-width]"
                                 >
                                     <DropdownMenuItem>
-                                        {/* <LogOut />
-                                        Log out */}
-                                        <LogoutButton />
+                                        {isAuthenticated ? <LogoutButton /> : <SignupButton />}
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
