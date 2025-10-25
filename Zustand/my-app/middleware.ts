@@ -6,7 +6,17 @@ export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // 쿠키에서 인증 상태 확인
-    const isAuthenticated = request.cookies.get("auth-storage")?.value;
+    const authCookie = request.cookies.get("auth-storage")?.value;
+    let isAuthenticated = false;
+
+    if (authCookie) {
+        try {
+            const authData = JSON.parse(authCookie);
+            isAuthenticated = authData.state?.isAuthenticated === true;
+        } catch {
+            isAuthenticated = false;
+        }
+    }
 
     // 인증이 필요한 페이지들
     const protectedRoutes = ["/dashboard"];
