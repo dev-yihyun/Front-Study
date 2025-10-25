@@ -14,7 +14,7 @@ function AuthGuard({ children, fallback }: AuthGuardProps) {
 
     useEffect(() => {
         requireAuth();
-    }, [isAuthenticated, isLoading]);
+    }, [isAuthenticated, isLoading, requireAuth]);
 
     if (isLoading) {
         return fallback || <PageLoadingSpinner />;

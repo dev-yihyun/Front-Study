@@ -13,9 +13,8 @@ function GuestGuard({ children, fallback }: GuestGuardProps) {
     const { requireGuest, isAuthenticated, isLoading } = useAuth();
 
     useEffect(() => {
-        console.log(`##GuestGuard 실행: isAuthenticated = ${isAuthenticated}`);
         requireGuest();
-    }, [isAuthenticated, isLoading]);
+    }, [isAuthenticated, isLoading, requireGuest]);
 
     if (isLoading) {
         return fallback || <PageLoadingSpinner />;
