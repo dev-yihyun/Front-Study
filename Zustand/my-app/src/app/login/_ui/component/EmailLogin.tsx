@@ -5,6 +5,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuthStore } from "@/shared/store/auth";
 import { UserType } from "@/shared/types/user";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
@@ -25,15 +26,16 @@ interface EmailLoginFormProps {
 function EmailLoginForm({ onLoginSuccess }: EmailLoginFormProps) {
     const router = useRouter();
     const { register, handleSubmit } = useForm<LoginFormValues>();
+    const { login } = useAuthStore(); // 스토어에서 login 함수 가져오기
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleLogin = async (data: LoginFormValues) => {
         setIsSubmitting(true);
         try {
             const user = await loginUser(data.email, data.password);
-            alert(`로그인 성공! 환영합니다, ${user.username}`);
             onLoginSuccess?.(user); // 로그인 성공 시 콜백 호출
-
+            login(user); // 스토어에 사용자 정보 저장
+            alert(`로그인 성공! 환영합니다, ${user.username}`);
             router.push("/dashboard");
         } catch (error: unknown) {
             const msg = error instanceof Error ? error.message : "로그인 실패";
