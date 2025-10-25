@@ -29,6 +29,12 @@
       "username": "ㅂㅈㄷㄱ",
       "useremail": "qwerqwer@qwer.com",
       "userpassword": "qwerqwer"
+    },
+    {
+      "id": "311f",
+      "username": "개발자",
+      "useremail": "dev@account.com",
+      "userpassword": "qwerqwer"
     }
   ]
 }

@@ -30,8 +30,12 @@ export const useAuthStore = create<AuthState>()(
             isAuthenticated: false,
 
             // 액션들
-            login: (user) => set({ user, isAuthenticated: true }),
-            logout: () => set({ user: null, isAuthenticated: false }),
+            login: (user) => {
+                set({ user, isAuthenticated: true });
+            },
+            logout: () => {
+                set({ user: null, isAuthenticated: false });
+            },
             setUser: (user) => set({ user, isAuthenticated: !!user }),
         }),
         {
