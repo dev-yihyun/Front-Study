@@ -20,7 +20,7 @@ function AuthGuard({ children, fallback }: AuthGuardProps) {
         return fallback || <PageLoadingSpinner />;
     }
 
-    if (isAuthenticated) {
+    if (!isAuthenticated) {
         return null; // 리다이렉트 중
     }
 
