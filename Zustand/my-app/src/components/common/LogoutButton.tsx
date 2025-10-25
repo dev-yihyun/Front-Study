@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/shared/hooks/useAuth";
 import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import React from "react";
 
 function LogoutButton() {
     const { logout } = useAuth();
@@ -22,4 +23,4 @@ function LogoutButton() {
     );
 }
 
-export default LogoutButton;
+export default React.memo(LogoutButton);
