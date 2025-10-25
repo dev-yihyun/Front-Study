@@ -1,4 +1,5 @@
 import AuthGuard from "@/components/common/AuthGuard";
+import LoadingOverlay from "@/components/common/LoadingOverlay";
 import "../globals.css";
 
 export default async function DashboardLayout({
@@ -7,7 +8,7 @@ export default async function DashboardLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <AuthGuard>
+        <AuthGuard fallback={<LoadingOverlay />}>
             <section>{children}</section>
         </AuthGuard>
     );

@@ -1,4 +1,5 @@
 import GuestGuard from "@/components/common/GuestGuard";
+import LoadingOverlay from "@/components/common/LoadingOverlay";
 import "../globals.css";
 
 export default async function LoginLayout({
@@ -7,7 +8,7 @@ export default async function LoginLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <GuestGuard>
+        <GuestGuard fallback={<LoadingOverlay />}>
             <section>{children}</section>
         </GuestGuard>
     );

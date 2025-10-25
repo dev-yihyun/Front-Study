@@ -1,8 +1,8 @@
 // src/components/common/AuthGuard.tsx (새로 생성)
 "use client";
 import { useAuth } from "@/shared/hooks/useAuth";
-import { useRouter } from "next/navigation";
 import React, { useEffect } from "react";
+import PageLoadingSpinner from "./PageLoadingSpinner";
 
 type AuthGuardProps = {
     children: React.ReactNode;
@@ -11,14 +11,13 @@ type AuthGuardProps = {
 
 function AuthGuard({ children, fallback }: AuthGuardProps) {
     const { requireAuth, isAuthenticated, isLoading } = useAuth();
-    const router = useRouter();
 
     useEffect(() => {
         requireAuth();
-    }, [isAuthenticated, isLoading, router]);
+    }, [isAuthenticated, isLoading]);
 
     if (isLoading) {
-        return fallback || <div>로딩중 ... </div>;
+        return fallback || <PageLoadingSpinner />;
     }
 
     if (isAuthenticated) {
