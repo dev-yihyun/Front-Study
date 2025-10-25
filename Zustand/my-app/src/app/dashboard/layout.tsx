@@ -1,3 +1,4 @@
+import AuthGuard from "@/components/common/AuthGuard";
 import "../globals.css";
 
 export default async function DashboardLayout({
@@ -5,5 +6,9 @@ export default async function DashboardLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return <section>{children}</section>;
+    return (
+        <AuthGuard>
+            <section>{children}</section>
+        </AuthGuard>
+    );
 }

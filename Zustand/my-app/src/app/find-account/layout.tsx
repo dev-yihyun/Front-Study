@@ -1,3 +1,4 @@
+import GuestGuard from "@/components/common/GuestGuard";
 import "../globals.css";
 
 export default async function FindAccountLayout({
@@ -5,5 +6,9 @@ export default async function FindAccountLayout({
 }: Readonly<{
     children: React.ReactNode;
 }>) {
-    return <section>{children}</section>;
+    return (
+        <GuestGuard>
+            <section>{children}</section>
+        </GuestGuard>
+    );
 }
