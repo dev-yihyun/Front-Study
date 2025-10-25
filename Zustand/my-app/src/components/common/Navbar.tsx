@@ -1,8 +1,7 @@
 "use client";
 
 import { appMenuItems, authMenuItems } from "@/shared/data/memu";
-// import userStore from "@/shared/store/user";
-import { ChevronUp, Command, LogOut } from "lucide-react";
+import { ChevronUp, Command } from "lucide-react";
 import React from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import {
@@ -26,6 +25,7 @@ import {
     SidebarProvider,
     SidebarTrigger,
 } from "../ui/sidebar";
+import LogoutButton from "./LogoutButton";
 import PageTitle from "./PageTitle";
 
 type NavbarProps = {
@@ -127,8 +127,9 @@ function Navbar({ children, defaultOpen }: NavbarProps) {
                                     className="w-[--radix-popper-anchor-width]"
                                 >
                                     <DropdownMenuItem>
-                                        <LogOut />
-                                        Log out
+                                        {/* <LogOut />
+                                        Log out */}
+                                        <LogoutButton />
                                     </DropdownMenuItem>
                                 </DropdownMenuContent>
                             </DropdownMenu>
