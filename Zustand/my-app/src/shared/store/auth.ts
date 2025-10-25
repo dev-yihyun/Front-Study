@@ -31,10 +31,17 @@ export const useAuthStore = create<AuthState>()(
 
             // 액션들
             login: (user) => {
+                // Zustand 상태 업데이트
                 set({ user, isAuthenticated: true });
+                // 쿠키로도 저장 (서버 미들웨어용)
+                document.cookie = `auth-storage=${encodeURIComponent(
+                    JSON.stringify({ state: { isAuthenticated: true } })
+                )}; path=/; SameSite=Lax;`;
             },
             logout: () => {
                 set({ user: null, isAuthenticated: false });
+                // 쿠키 제거
+                document.cookie = "auth-storage=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT;";
             },
             setUser: (user) => set({ user, isAuthenticated: !!user }),
         }),

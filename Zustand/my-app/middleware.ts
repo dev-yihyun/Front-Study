@@ -11,7 +11,7 @@ export function middleware(request: NextRequest) {
 
     if (authCookie) {
         try {
-            const authData = JSON.parse(authCookie);
+            const authData = JSON.parse(decodeURIComponent(authCookie));
             isAuthenticated = authData.state?.isAuthenticated === true;
         } catch {
             isAuthenticated = false;
